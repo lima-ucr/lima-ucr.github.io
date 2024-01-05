@@ -1,0 +1,272 @@
+<h1>Guía de Instalación del programa OpenLane</h1>
+<p><i>Elaborado por Ana Eugenia Sánchez Villalobos</i></p>
+<p><i>Revisado por Erick Carvajal Barboza</i></p>
+<p><i>Email: erick punto carvajal punto barboza arroba ucr punto ac punto cr </i></p>
+<p><i>Escuela de Ingeniería Eléctrica, Universidad de Costa Rica</i></p>
+
+<p> En esta guía de instalación encontrará los pasos necesarios para instalar y
+ejecutar el flujo de diseño de circuitos integrados OpenLane. Los paquetes que
+se instalarán en este tutorial corresponden a la configuración básica. Para
+utilizar versiones distintas diríjase al siguiente
+<a href="https://github.com/The-OpenROAD-Project/OpenLane">enlace</a>
+donde encontrará una guía breve para la instalación de otros paquetes
+para el uso de OpenLane.</p>
+
+<h2>Instalación pre-requisitos para OpenLane</h2>
+
+<p> Antes de instalar es necesario tener instalados los siguientes
+requerimientos: </p>
+<ul>
+  <li>GNU Make</li>
+  <li>Python versión 3.6+ con pip y virtualenv </li>
+  <li>Git versión 2.35+</li>
+  <li>Docker 19.03.12+</li>
+</ul>
+
+<p> En caso de tener alguno de estos programas instalados y no saber su versión,
+puede utilizar el comando <code>version</code> en la terminal,
+como el siguiente ejemplo:</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  >$ git version
+ </code>
+</pre>
+
+<h2>Instalación en sistema operativo Linux</h2>
+
+<h3>Instalación de Python virtualenv</h3>
+
+<p> Para la instalación de esta es importante tener en cuenta que se utilizará
+Python3. Virtualenv, es una herramienta que permite crear entornos virtuales
+aislados de Python. Para instalar <code>virtualenv</code>, basta con ejecutar
+la siguiente línea de código en la terminal:
+ </p>
+
+ <pre>
+   <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+   >$ sudo apt install -y build-essential python3 python3-venv python3-pip
+  </code>
+ </pre>
+<p> <i> Nota: Podría ser necesario tener permisos de root para instalar
+los paquetes correctamente. </i> </p>
+
+<h3>Desinstalación de versiones viejas</h3>
+
+<p> Para evitar problemas de instalación del paquete <code>Docker</code>,
+es importante desinstalar cualquier versión desactualizada. Para remover dichas
+versiones ejecute la siguiente línea en la terminal. </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo apt-get remove docker docker-engine docker.io containerd runc
+ </code>
+</pre>
+
+<h3>Instalación de Git</h3>
+
+<p> Para instalar Git, ejecute las siguientes lineas de código en la terminal.</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo apt-get update
+    >$ sudo apt-get install git-all
+ </code>
+</pre>
+
+<p> Es posible verificar la instalación utilizando el comando <code>version</code>,
+de forma que si no se instaló correctamente, mostrará un mensaje de error.
+ </p>
+
+<h3>Instalación de Docker</h3>
+
+<p> Para instalar <code>docker</code> es importante contar con la versión de
+64-bits de alguna de las siguientes distribuciones de Ubuntu: </p>
+
+<ul>
+  <li>Ubuntu Jammy 22.04 (LTS)</li>
+  <li>Ubuntu Impish 21.10</li>
+  <li>Ubuntu Focal 20.04 (LTS)</li>
+  <li>Ubuntu Bionic 18.04 (LTS)</li>
+</ul>
+
+<p> Antes de instalar <code>docker</code> por primera vez, es necesario
+configurar el repositorio, para esto ejecute los siguientes comandos en la
+terminal:</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo apt-get update
+    >$ sudo apt-get install ca-certificates curl gnupg lsb-release
+ </code>
+</pre>
+
+<p> Luego de esto se añade la llave GPG oficial de Docker, en otras palabras el
+GNU Privacy Guard de Docker, con las siguientes líneas en la terminal.
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo mkdir -p /etc/apt/keyrings
+    >$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | <wbr>sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+ </code>
+</pre>
+
+<p> Ahora, para configurar el repositorio ejecute el siguiente comando:</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ echo \ "deb [arch=$(dpkg --print-architecture) <wbr>signed-by=/etc/apt/keyrings/docker.gpg] <wbr>https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | <wbr>sudo tee /etc/apt/sources.list.d/docker.list > <wbr>/dev/null
+ </code>
+</pre>
+
+<p> Para instalar Docker se ejecutan las siguientes líneas de código en la terminal: </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo apt-get update
+    >$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+ </code>
+</pre>
+
+<p> Para verificar la correcta instalación, ejecute el siguiente comando: </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo docker run hello-world
+ </code>
+</pre>
+
+<p>Para evitar el uso constante de sudo debe crear un
+grupo llamado docker mediante el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo groupadd docker
+ </code>
+</pre>
+
+<p>Luego, debe agregar su usuario a ese grupo, usando el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo usermod -aG docker ${USER}
+ </code>
+</pre>
+
+<p>Para que estos cambios tomen efecto debe reiniciar la computadora o cerrar
+la sesión (hacer log-off) de su computadora. Puede verificar que haya sido
+agregado correctamente al grupo ejecutando el comando <code>groups</code>
+en la terminal.
+</p>
+
+<h2>Instalación en sistema operativo Windows</h2>
+
+<p> Actualmente OpenLane no está soportado en Windows. Si no desea instalar
+algún sistema operativo basado en Linux en su computadora, deberá utilizar una
+máquina virtual e instalar algún sistema operativo Linux en la misma.
+Se recomienda el uso de <code>VirtualBox</code>, pero cualquier plataforma de
+virtualización debería funcionar correctamente. </p>
+
+<p>Posteriormente, siga las instrucciones para instalar OpenLane en Linux
+mostradas en la Sección anterior.
+</p>
+
+<h2>Instalación en sistema operativo MacOS</h2>
+
+<p>Instale el administrador de paquetes <a href="https://brew.sh/">Homebrew</a>
+y posteriormente instale los pre-requisitos utilizando el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ brew install python make brew install --cask docker
+ </code>
+</pre>
+
+<h1>Configuración de OpenLane</h1>
+
+<p><i> El procedimiento mostrado a continuación fue validado en una computadora
+con Ubuntu 20.04.4 LTS, distintas distribuciones de Linux o MacOS podría
+requerir pasos adicionales.</i></p>
+
+<p>En esta sección se muestran los pasos necesarios para la instalación de
+OpenLane, el cual incluye la instalación del PDK (Physical Design Kit) SkyWater
+SKY130, el cual se utilizará para la ejecución de todas las etapas
+(Síntesis Lógica, Floorplan, Posicionamiento y Enrutamiento Automático,
+Extracción, Análisis Estático de Temporización, etc).
+</p>
+
+<p>Los comandos que se deben ejecutar se muestran a continuación (podría
+necesitar permisos de root):
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ git clone https://github.com/The-OpenROAD-Project/OpenLane.git
+    <!-- >$ git config --global --add safe.directory <Ruta al OpenLane descargado> -->
+    >$ cd <Ruta al OpenLane descargado>
+    >$ sudo make
+    >$ make test
+    <!-- >$ sudo chmod 0775 -R <Ruta al OpenLane descargado> -->
+ </code>
+</pre>
+
+<p>La línea <code>make test</code>, hace una prueba que tarda alrededor de 5
+minutos y verifica la instalación correcta de cada etapa del flujo y los PDKs.</p>
+
+<p>Si fuera necesario, para actualizar OpenLane y los archivos que incluye, se deben ejecutar
+las siguientes líneas de código. Dentro de estas líneas se incluye el comando
+<code>make test</code>, esto para asegurarse del correcto funcionamiento del flujo.
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ cd OpenLane/
+    >$ git checkout master
+    >$ git pull
+    >$ make
+    >$ make test
+ </code>
+</pre>
+
+<h1>Ejecutando OpenLane</h1>
+
+<p>Luego de haber seguido todos los pasos correctamente, podemos proceder a
+utilizar OpenLane, para esto se debe ejecutar las siguientes dos líneas:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ export PDK_ROOT=<Ruta al archivo donde <wbr>se encuentran las instalaciones <wbr>de skywater-pdk, open_pdks, <wbr>y sky130A>
+    >$ export OPENLANE_IMAGE_NAME=<Ruta al docker>
+ </code>
+</pre>
+
+<p>Estas líneas de código deben ejecutarse dentro de la carpeta de OpenLane,
+la cual fue creada en la sección de instalación de <code>docker</code>.
+</p>
+
+<p>La ruta al archivo donde se encuentran las instalaciones de skywater-pdk,
+open_pdks, y sky130A, es usualmente <code><HOME>/OpenLane/pdks/</code>, y por
+el otro lado la ruta donde se enuentra docker es usualmente
+<code><HOME>/OpenLane</code>.
+</p>
+
+<p>Luego de esto se ejecuta la siguiente línea para entrar al entorno de OpenLane.
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ make mount
+ </code>
+</pre>
+
+
+<h1>FAQs</h1>
+
+<p>Para encontrar una lista actualizada de las preguntas más comunes puede ir
+al siguiente <a href="faqs.html">enlace</a>.
+</p>

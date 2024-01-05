@@ -1,0 +1,61 @@
+<h1>FAQs OpenLane Tutorial en Español</h1>
+<p><i>Elaborado y mantenido por Erick Carvajal Barboza</i></p>
+<p><i>Email: erick punto carvajal punto barboza arroba ucr punto ac punto cr </i></p>
+<p><i>Escuela de Ingeniería Eléctrica, Universidad de Costa Rica</i></p>
+
+<h2>Errores para desplegar interfaces gráficas</h2>
+
+<ul>
+  <li>
+    Al intentar abrir una aplicación con GUI dentro del docker de OpenLane (una
+    vez <code>make mount</code> fue ejecutado) me aparece el siguiente error:
+
+    <pre>
+      <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+No protocol specified
+Application initialization failed: couldn't connect to display ":0"
+No protocol specified
+Error in startup script: couldn't connect to display ":0"
+     </code>
+    </pre>
+
+    Esto se debe a que dentro del docker no se ha indicado cómo comunicarse con la interfaz gráfica, usualmente se resuelve ejecutando el siguiente comando en la terminal (no dentro del docker):
+    <pre>
+      <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+      >$ xhost +local:docker
+     </code>
+    </pre>
+  </li>
+
+
+  <li>
+    Cuando intento abrir el GUI de OpenROAD me aparece el siguiente error:
+    <pre>
+      <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-'
+process 9: The last reference on a connection was <wbr>dropped without closing the <wbr>connection. This is <wbr>a bug in an application. <wbr>See dbus_connection_unref() <wbr>documentation for <wbr>details.
+     </code>
+    </pre>
+
+    Para resolver este error debemos abrir el archivo OpenLane/Makefile, y buscar la sección a cargo de ejecutar el make mount:
+    <pre>
+      <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+.PHONY: mount
+mount:
+cd $(OPENLANE_DIR) && \
+  $(ENV_START) -ti $(OPENLANE_IMAGE_NAME)-$(DOCKER_ARCH)
+     </code>
+    </pre>
+    A esta sección se le debe agregar <code>-privileged</code> justo después del
+    <code>-ti</code>, de forma que quede asi:
+    <pre>
+      <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+.PHONY: mount
+mount:
+cd $(OPENLANE_DIR) && \
+  $(ENV_START) -ti --privileged $(OPENLANE_IMAGE_NAME)-$(DOCKER_ARCH)
+     </code>
+    </pre>
+  </li>
+
+</ul>

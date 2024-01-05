@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diseño físico &mdash; Documentacion OpenLane</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Análisis de temporización estatico (STA)" href="ta.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            OpenLane
+              <img src="_static/LogoUCRtransparentePNG.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="synthesis.html">Síntesis lógica</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Diseño físico</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#floorplan-fp">Floorplan (FP)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuracion-por-defecto">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#descripcion-y-ejemplos">Descripción y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-tap-decap-insertion"><code class="docutils literal notranslate"><span class="pre">RUN_TAP_DECAP_INSERTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-core-util"><code class="docutils literal notranslate"><span class="pre">FP_CORE_UTIL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-aspect-ratio"><code class="docutils literal notranslate"><span class="pre">FP_ASPECT_RATIO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-sizing"><code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#die-area"><code class="docutils literal notranslate"><span class="pre">DIE_AREA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#core-area"><code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-mode"><code class="docutils literal notranslate"><span class="pre">FP_IO_MODE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-welltap-cell"><code class="docutils literal notranslate"><span class="pre">FP_WELLTAP_CELL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-encap-cell"><code class="docutils literal notranslate"><span class="pre">FP_ENCAP_CELL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-cfg"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CFG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-auto-adjust"><code class="docutils literal notranslate"><span class="pre">FP_PDN_AUTO_ADJUST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-skiptrim"><code class="docutils literal notranslate"><span class="pre">FP_PDN_SKIPTRIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-tapcell-dist"><code class="docutils literal notranslate"><span class="pre">FP_TAPCELL_DIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-vextend"><code class="docutils literal notranslate"><span class="pre">FP_IO_VEXTEND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-hextend"><code class="docutils literal notranslate"><span class="pre">FP_IO_HEXTEND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-vlength"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-hlength"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-vthickness-mult"><code class="docutils literal notranslate"><span class="pre">FP_IO_VTHICKNESS_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-hthickness-mult"><code class="docutils literal notranslate"><span class="pre">FP_IO_HTHICKNESS_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bottom-margin-mult"><code class="docutils literal notranslate"><span class="pre">BOTTOM_MARGIN_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#top-margin-mult"><code class="docutils literal notranslate"><span class="pre">TOP_MARGIN_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#left-margin-mult"><code class="docutils literal notranslate"><span class="pre">LEFT_MARGIN_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#right-margin-mult"><code class="docutils literal notranslate"><span class="pre">RIGHT_MARGIN_MULT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-core-ring"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CORE_RING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-enable-global-connections"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE__GLOBAL_CONNECTIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-enable-rails"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_RAILS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-enable-macros-grid"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_MACROS_GRID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-macro-hooks"><code class="docutils literal notranslate"><span class="pre">FP_PDN_MACRO_HOOKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-check-nodes"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CHECK_NODES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-tap-horizontal-halo"><code class="docutils literal notranslate"><span class="pre">FP_TAP_HORIZONTAL_HALO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-tap-vertical-halo"><code class="docutils literal notranslate"><span class="pre">FP_TAP_VERTICAL_HALO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-horizontal-halo"><code class="docutils literal notranslate"><span class="pre">FP_PDN_HORIZONTAL_HALO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pdn-vertical-halo"><code class="docutils literal notranslate"><span class="pre">FP_PDN_VERTICAL_HALO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#design-is-core"><code class="docutils literal notranslate"><span class="pre">DESIGN_IS_CORE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-pin-order-cfg"><code class="docutils literal notranslate"><span class="pre">FP_PIN_ORDER_CFG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-min-distance"><code class="docutils literal notranslate"><span class="pre">FP_IO_MIN_DISTANCE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-padframe-cfg"><code class="docutils literal notranslate"><span class="pre">FP_PADFRAME_CFG</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#variables-de-capa-i-o">Variables de capa I/O</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Descripción y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-hlayer"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLAYER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fp-io-vlayer"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLAYER</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#todos-los-pasos-para-el-resizer-rsz">Todos los pasos para el Resizer (RSZ)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#descripcion">Descripción:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-lib"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-lib-fastest"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_FASTEST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-lib-slowest"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_SLOWEST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-multicorner-lib"><code class="docutils literal notranslate"><span class="pre">RSZ_MULTICORNER_LIB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-dont-touch-rx"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH_RX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rsz-dont-touch"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#placement-global-y-detallado-gpl-dpl">Placement Global y Detallado (GPL/DPL)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Descripción y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pl-target-density"><code class="docutils literal notranslate"><span class="pre">PL_TARGET_DENSITY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-time-driven"><code class="docutils literal notranslate"><span class="pre">PL_TIME_DRIVEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-basic-placement"><code class="docutils literal notranslate"><span class="pre">PL_BASIC_PLACEMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-skip-initial-placement"><code class="docutils literal notranslate"><span class="pre">PL_SKIP_INITIAL_PLACEMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-random-glb-placement"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_GLB_PLACEMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-random-initial-placement"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_INITIAL_PLACEMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-routability-driven"><code class="docutils literal notranslate"><span class="pre">PL_ROUTABILITY_DRIVEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-tie-seperation"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIE_SEPERATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-design-optimizations"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-timing-optimizations"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIMING_OPTIMIZATIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-max-wire-length"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_WIRE_LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-max-slew-margin"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_SLEW_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-max-cap-margin"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_CAP_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-hold-slack-margin"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_SLACK_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-setup-slack-margin"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_SLACK_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-hold-max-buffer-percent"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-setup-max-buffer-percent"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-allow-setup-vios"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_ALLOW_SETUP_VIOS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-wirelength-coef"><code class="docutils literal notranslate"><span class="pre">PL_WIRELENGTH_COEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dont-use-cells"><code class="docutils literal notranslate"><span class="pre">DONT_USE_CELLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-estimate-parasitics"><code class="docutils literal notranslate"><span class="pre">PL_ESTIMATE_PARASITICS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-optimize-mirroring"><code class="docutils literal notranslate"><span class="pre">PL_OPTIMIZE_MIRRORING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-buffer-input-ports"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_INPUT_PORTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-buffer-output-ports"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_OUTPUT_PORTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-resizer-repair-tie-fanout"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_REPAIR_TIE_FANOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-max-displacement-x"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_X</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-max-displacement-y"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_Y</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-macro-halo"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_HALO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pl-macro-channel"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_CHANNEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#macro-placement-cfg"><code class="docutils literal notranslate"><span class="pre">MACRO_PLACEMENT_CFG</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#resumen-de-resultados">Resumen de resultados:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sintesis-del-arbol-de-reloj-cts">Síntesis del árbol de reloj (CTS)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Descripcion y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-cts"><code class="docutils literal notranslate"><span class="pre">RUN_CTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-fill-insertion"><code class="docutils literal notranslate"><span class="pre">RUN_FILL_INSERTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-sink-clustering-size"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_SIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-sink-clustering-max-diameter"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_MAX_DIAMETER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-report-timing"><code class="docutils literal notranslate"><span class="pre">CTS_REPORT_TIMING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-clk-max-wire-length"><code class="docutils literal notranslate"><span class="pre">CTS_CLK_MAX_WIRE_LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-disable-post-processing"><code class="docutils literal notranslate"><span class="pre">CTS_DISABLE_POST_PROCESSING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-distance-between-buffers"><code class="docutils literal notranslate"><span class="pre">CTS_DISTANCE_BETWEEN_BUFFERS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lib-cts"><code class="docutils literal notranslate"><span class="pre">LIB_CTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lib-cts-slowest"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_SLOWEST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lib-cts-fastest"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_FASTEST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cts-multicorner-lib"><code class="docutils literal notranslate"><span class="pre">CTS_MULTICORNER_LIB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Resumen de resultados:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#routing-global-y-detallado-grt-drt">Routing global y detallado (GRT/DRT)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Descripción y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-drt"><code class="docutils literal notranslate"><span class="pre">RUN_DRT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#global-router"><code class="docutils literal notranslate"><span class="pre">GLOBAL_ROUTER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detailed-router"><code class="docutils literal notranslate"><span class="pre">DETAILED_ROUTER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#routing-cores"><code class="docutils literal notranslate"><span class="pre">ROUTING_CORES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rt-clock-min-layer"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MIN_LAYER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rt-clock-max-layer"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MAX_LAYER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-timing-optimizations"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_TIMING_OPTIMIZATIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-design-optimizations"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-max-wire-length"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_WIRE_LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-max-slew-margin"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_SLEW_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-max-cap-margin"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_CAP_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-hold-slack-margin"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_SLACK_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-setup-slack-margin"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_SLACK_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-hold-max-buffer-percent"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-setup-max-buffer-percent"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-resizer-allow-setup-vios"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_ALLOW_SETUP_VIOS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glb-optimize-mirroring"><code class="docutils literal notranslate"><span class="pre">GLB_OPTIMIZE_MIRRORING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-allow-congestion"><code class="docutils literal notranslate"><span class="pre">GRT_ALLOW_CONGESTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-overflow-iters"><code class="docutils literal notranslate"><span class="pre">GRT_OVERFLOW_ITERS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-ant-iters"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_ITERS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-ant-margin"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_MARGIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-estimate-parasitics"><code class="docutils literal notranslate"><span class="pre">GRT_ESTIMATE_PARASITICS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-max-diode-ins-iters"><code class="docutils literal notranslate"><span class="pre">GRT_MAX_DIODE_INS_ITERS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-repair-antennas"><code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-obs"><code class="docutils literal notranslate"><span class="pre">GRT_OBS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-adjustment"><code class="docutils literal notranslate"><span class="pre">GRT_ADJUSTMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grt-macro-extension"><code class="docutils literal notranslate"><span class="pre">GRT_MACRO_EXTENSION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drt-min-layer"><code class="docutils literal notranslate"><span class="pre">DRT_MIN_LAYER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drt-max-layer"><code class="docutils literal notranslate"><span class="pre">DRT_MAX_LAYER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#drt-opt-iters"><code class="docutils literal notranslate"><span class="pre">DRT_OPT_ITERS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Resumen de resultados:</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scripts-de-insercion-de-diodos-personalizada">Scripts de inserción de diodos personalizada</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Descripción y ejemplos:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-heuristic-diode-insertion"><code class="docutils literal notranslate"><span class="pre">RUN_HEURISTIC_DIODE_INSERTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#heuristic-antenna-threshold"><code class="docutils literal notranslate"><span class="pre">HEURISTIC_ANTENNA_THRESHOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#diode-on-ports"><code class="docutils literal notranslate"><span class="pre">DIODE_ON_PORTS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#capacitancias-y-resistencias-parasitas">Capacitancias y resistencias parásitas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id30">Descripción:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-spef-extraction"><code class="docutils literal notranslate"><span class="pre">RUN_SPEF_EXTRACTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spef-extractor"><code class="docutils literal notranslate"><span class="pre">SPEF_EXTRACTOR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rcx-merge-via-wire-res"><code class="docutils literal notranslate"><span class="pre">RCX_MERGE_VIA_WIRE_RES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#analisis-de-caida-de-ir">Análisis de caída de IR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id31">Descripción:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-irdrop-report"><code class="docutils literal notranslate"><span class="pre">RUN_IRDROP_REPORT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vsrc-loc-files"><code class="docutils literal notranslate"><span class="pre">VSRC_LOC_FILES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#signoff">Signoff</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id32">Configuración por defecto:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">Descripción:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#primary-signoff-tool"><code class="docutils literal notranslate"><span class="pre">PRIMARY_SIGNOFF_TOOL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-arc-antenna-check"><code class="docutils literal notranslate"><span class="pre">USE_ARC_ANTENNA_CHECK</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-cvc"><code class="docutils literal notranslate"><span class="pre">RUN_CVC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#signoff-sdc-file"><code class="docutils literal notranslate"><span class="pre">SIGNOFF_SDC_FILE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ta.html">Análisis de temporización estatico (STA)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="macros.html">Integración de macros</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OpenLane</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Diseño físico</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/design.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="diseno-fisico">
+<h1><a class="toc-backref" href="#id38" role="doc-backlink">Diseño físico</a><a class="headerlink" href="#diseno-fisico" title="Link to this heading"></a></h1>
+<nav class="contents" id="contenidos">
+<p class="topic-title">Contenidos</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#diseno-fisico" id="id38">Diseño físico</a></p>
+<ul>
+<li><p><a class="reference internal" href="#floorplan-fp" id="id39">Floorplan (FP)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuracion-por-defecto" id="id40">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#descripcion-y-ejemplos" id="id41">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-tap-decap-insertion" id="id42"><code class="docutils literal notranslate"><span class="pre">RUN_TAP_DECAP_INSERTION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-core-util" id="id43"><code class="docutils literal notranslate"><span class="pre">FP_CORE_UTIL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-aspect-ratio" id="id44"><code class="docutils literal notranslate"><span class="pre">FP_ASPECT_RATIO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-sizing" id="id45"><code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#die-area" id="id46"><code class="docutils literal notranslate"><span class="pre">DIE_AREA</span></code></a></p></li>
+<li><p><a class="reference internal" href="#core-area" id="id47"><code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-mode" id="id48"><code class="docutils literal notranslate"><span class="pre">FP_IO_MODE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-welltap-cell" id="id49"><code class="docutils literal notranslate"><span class="pre">FP_WELLTAP_CELL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-encap-cell" id="id50"><code class="docutils literal notranslate"><span class="pre">FP_ENCAP_CELL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-cfg" id="id51"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CFG</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-auto-adjust" id="id52"><code class="docutils literal notranslate"><span class="pre">FP_PDN_AUTO_ADJUST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-skiptrim" id="id53"><code class="docutils literal notranslate"><span class="pre">FP_PDN_SKIPTRIM</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-tapcell-dist" id="id54"><code class="docutils literal notranslate"><span class="pre">FP_TAPCELL_DIST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-vextend" id="id55"><code class="docutils literal notranslate"><span class="pre">FP_IO_VEXTEND</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-hextend" id="id56"><code class="docutils literal notranslate"><span class="pre">FP_IO_HEXTEND</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-vlength" id="id57"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLENGTH</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-hlength" id="id58"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLENGTH</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-vthickness-mult" id="id59"><code class="docutils literal notranslate"><span class="pre">FP_IO_VTHICKNESS_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-hthickness-mult" id="id60"><code class="docutils literal notranslate"><span class="pre">FP_IO_HTHICKNESS_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#bottom-margin-mult" id="id61"><code class="docutils literal notranslate"><span class="pre">BOTTOM_MARGIN_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#top-margin-mult" id="id62"><code class="docutils literal notranslate"><span class="pre">TOP_MARGIN_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#left-margin-mult" id="id63"><code class="docutils literal notranslate"><span class="pre">LEFT_MARGIN_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#right-margin-mult" id="id64"><code class="docutils literal notranslate"><span class="pre">RIGHT_MARGIN_MULT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-core-ring" id="id65"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CORE_RING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-enable-global-connections" id="id66"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE__GLOBAL_CONNECTIONS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-enable-rails" id="id67"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_RAILS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-enable-macros-grid" id="id68"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_MACROS_GRID</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-macro-hooks" id="id69"><code class="docutils literal notranslate"><span class="pre">FP_PDN_MACRO_HOOKS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-check-nodes" id="id70"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CHECK_NODES</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-tap-horizontal-halo" id="id71"><code class="docutils literal notranslate"><span class="pre">FP_TAP_HORIZONTAL_HALO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-tap-vertical-halo" id="id72"><code class="docutils literal notranslate"><span class="pre">FP_TAP_VERTICAL_HALO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-horizontal-halo" id="id73"><code class="docutils literal notranslate"><span class="pre">FP_PDN_HORIZONTAL_HALO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pdn-vertical-halo" id="id74"><code class="docutils literal notranslate"><span class="pre">FP_PDN_VERTICAL_HALO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#design-is-core" id="id75"><code class="docutils literal notranslate"><span class="pre">DESIGN_IS_CORE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-pin-order-cfg" id="id76"><code class="docutils literal notranslate"><span class="pre">FP_PIN_ORDER_CFG</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-min-distance" id="id77"><code class="docutils literal notranslate"><span class="pre">FP_IO_MIN_DISTANCE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-padframe-cfg" id="id78"><code class="docutils literal notranslate"><span class="pre">FP_PADFRAME_CFG</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#variables-de-capa-i-o" id="id79">Variables de capa I/O</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id11" id="id80">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#fp-io-hlayer" id="id81"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLAYER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#fp-io-vlayer" id="id82"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLAYER</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#todos-los-pasos-para-el-resizer-rsz" id="id83">Todos los pasos para el Resizer (RSZ)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#descripcion" id="id84">Descripción:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#rsz-lib" id="id85"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rsz-lib-fastest" id="id86"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_FASTEST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rsz-lib-slowest" id="id87"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_SLOWEST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rsz-multicorner-lib" id="id88"><code class="docutils literal notranslate"><span class="pre">RSZ_MULTICORNER_LIB</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rsz-dont-touch-rx" id="id89"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH_RX</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rsz-dont-touch" id="id90"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#placement-global-y-detallado-gpl-dpl" id="id91">Placement Global y Detallado (GPL/DPL)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id12" id="id92">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id93">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pl-target-density" id="id94"><code class="docutils literal notranslate"><span class="pre">PL_TARGET_DENSITY</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-time-driven" id="id95"><code class="docutils literal notranslate"><span class="pre">PL_TIME_DRIVEN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-basic-placement" id="id96"><code class="docutils literal notranslate"><span class="pre">PL_BASIC_PLACEMENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-skip-initial-placement" id="id97"><code class="docutils literal notranslate"><span class="pre">PL_SKIP_INITIAL_PLACEMENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-random-glb-placement" id="id98"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_GLB_PLACEMENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-random-initial-placement" id="id99"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_INITIAL_PLACEMENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-routability-driven" id="id100"><code class="docutils literal notranslate"><span class="pre">PL_ROUTABILITY_DRIVEN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-tie-seperation" id="id101"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIE_SEPERATION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-design-optimizations" id="id102"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-timing-optimizations" id="id103"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIMING_OPTIMIZATIONS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-max-wire-length" id="id104"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_WIRE_LENGTH</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-max-slew-margin" id="id105"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_SLEW_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-max-cap-margin" id="id106"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_CAP_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-hold-slack-margin" id="id107"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_SLACK_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-setup-slack-margin" id="id108"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_SLACK_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-hold-max-buffer-percent" id="id109"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-setup-max-buffer-percent" id="id110"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-allow-setup-vios" id="id111"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_ALLOW_SETUP_VIOS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-wirelength-coef" id="id112"><code class="docutils literal notranslate"><span class="pre">PL_WIRELENGTH_COEF</span></code></a></p></li>
+<li><p><a class="reference internal" href="#dont-use-cells" id="id113"><code class="docutils literal notranslate"><span class="pre">DONT_USE_CELLS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-estimate-parasitics" id="id114"><code class="docutils literal notranslate"><span class="pre">PL_ESTIMATE_PARASITICS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-optimize-mirroring" id="id115"><code class="docutils literal notranslate"><span class="pre">PL_OPTIMIZE_MIRRORING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-buffer-input-ports" id="id116"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_INPUT_PORTS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-buffer-output-ports" id="id117"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_OUTPUT_PORTS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-resizer-repair-tie-fanout" id="id118"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_REPAIR_TIE_FANOUT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-max-displacement-x" id="id119"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_X</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-max-displacement-y" id="id120"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_Y</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-macro-halo" id="id121"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_HALO</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pl-macro-channel" id="id122"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_CHANNEL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#macro-placement-cfg" id="id123"><code class="docutils literal notranslate"><span class="pre">MACRO_PLACEMENT_CFG</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#resumen-de-resultados" id="id124">Resumen de resultados:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#sintesis-del-arbol-de-reloj-cts" id="id125">Síntesis del árbol de reloj (CTS)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id19" id="id126">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id127">Descripcion y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-cts" id="id128"><code class="docutils literal notranslate"><span class="pre">RUN_CTS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#run-fill-insertion" id="id129"><code class="docutils literal notranslate"><span class="pre">RUN_FILL_INSERTION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-sink-clustering-size" id="id130"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_SIZE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-sink-clustering-max-diameter" id="id131"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_MAX_DIAMETER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-report-timing" id="id132"><code class="docutils literal notranslate"><span class="pre">CTS_REPORT_TIMING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-clk-max-wire-length" id="id133"><code class="docutils literal notranslate"><span class="pre">CTS_CLK_MAX_WIRE_LENGTH</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-disable-post-processing" id="id134"><code class="docutils literal notranslate"><span class="pre">CTS_DISABLE_POST_PROCESSING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-distance-between-buffers" id="id135"><code class="docutils literal notranslate"><span class="pre">CTS_DISTANCE_BETWEEN_BUFFERS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#lib-cts" id="id136"><code class="docutils literal notranslate"><span class="pre">LIB_CTS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#lib-cts-slowest" id="id137"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_SLOWEST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#lib-cts-fastest" id="id138"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_FASTEST</span></code></a></p></li>
+<li><p><a class="reference internal" href="#cts-multicorner-lib" id="id139"><code class="docutils literal notranslate"><span class="pre">CTS_MULTICORNER_LIB</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id21" id="id140">Resumen de resultados:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#routing-global-y-detallado-grt-drt" id="id141">Routing global y detallado (GRT/DRT)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id22" id="id142">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id143">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-drt" id="id144"><code class="docutils literal notranslate"><span class="pre">RUN_DRT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#global-router" id="id145"><code class="docutils literal notranslate"><span class="pre">GLOBAL_ROUTER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#detailed-router" id="id146"><code class="docutils literal notranslate"><span class="pre">DETAILED_ROUTER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#routing-cores" id="id147"><code class="docutils literal notranslate"><span class="pre">ROUTING_CORES</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rt-clock-min-layer" id="id148"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MIN_LAYER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rt-clock-max-layer" id="id149"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MAX_LAYER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-timing-optimizations" id="id150"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_TIMING_OPTIMIZATIONS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-design-optimizations" id="id151"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-max-wire-length" id="id152"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_WIRE_LENGTH</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-max-slew-margin" id="id153"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_SLEW_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-max-cap-margin" id="id154"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_CAP_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-hold-slack-margin" id="id155"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_SLACK_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-setup-slack-margin" id="id156"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_SLACK_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-hold-max-buffer-percent" id="id157"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-setup-max-buffer-percent" id="id158"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-resizer-allow-setup-vios" id="id159"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_ALLOW_SETUP_VIOS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#glb-optimize-mirroring" id="id160"><code class="docutils literal notranslate"><span class="pre">GLB_OPTIMIZE_MIRRORING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-allow-congestion" id="id161"><code class="docutils literal notranslate"><span class="pre">GRT_ALLOW_CONGESTION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-overflow-iters" id="id162"><code class="docutils literal notranslate"><span class="pre">GRT_OVERFLOW_ITERS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-ant-iters" id="id163"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_ITERS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-ant-margin" id="id164"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_MARGIN</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-estimate-parasitics" id="id165"><code class="docutils literal notranslate"><span class="pre">GRT_ESTIMATE_PARASITICS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-max-diode-ins-iters" id="id166"><code class="docutils literal notranslate"><span class="pre">GRT_MAX_DIODE_INS_ITERS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-repair-antennas" id="id167"><code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-obs" id="id168"><code class="docutils literal notranslate"><span class="pre">GRT_OBS</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-adjustment" id="id169"><code class="docutils literal notranslate"><span class="pre">GRT_ADJUSTMENT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#grt-macro-extension" id="id170"><code class="docutils literal notranslate"><span class="pre">GRT_MACRO_EXTENSION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#drt-min-layer" id="id171"><code class="docutils literal notranslate"><span class="pre">DRT_MIN_LAYER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#drt-max-layer" id="id172"><code class="docutils literal notranslate"><span class="pre">DRT_MAX_LAYER</span></code></a></p></li>
+<li><p><a class="reference internal" href="#drt-opt-iters" id="id173"><code class="docutils literal notranslate"><span class="pre">DRT_OPT_ITERS</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id26" id="id174">Resumen de resultados:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#scripts-de-insercion-de-diodos-personalizada" id="id175">Scripts de inserción de diodos personalizada</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id27" id="id176">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id28" id="id177">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-heuristic-diode-insertion" id="id178"><code class="docutils literal notranslate"><span class="pre">RUN_HEURISTIC_DIODE_INSERTION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#heuristic-antenna-threshold" id="id179"><code class="docutils literal notranslate"><span class="pre">HEURISTIC_ANTENNA_THRESHOLD</span></code></a></p></li>
+<li><p><a class="reference internal" href="#diode-on-ports" id="id180"><code class="docutils literal notranslate"><span class="pre">DIODE_ON_PORTS</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#capacitancias-y-resistencias-parasitas" id="id181">Capacitancias y resistencias parásitas</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id29" id="id182">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id30" id="id183">Descripción:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-spef-extraction" id="id184"><code class="docutils literal notranslate"><span class="pre">RUN_SPEF_EXTRACTION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#spef-extractor" id="id185"><code class="docutils literal notranslate"><span class="pre">SPEF_EXTRACTOR</span></code></a></p></li>
+<li><p><a class="reference internal" href="#rcx-merge-via-wire-res" id="id186"><code class="docutils literal notranslate"><span class="pre">RCX_MERGE_VIA_WIRE_RES</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#analisis-de-caida-de-ir" id="id187">Análisis de caída de IR</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id31" id="id188">Descripción:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-irdrop-report" id="id189"><code class="docutils literal notranslate"><span class="pre">RUN_IRDROP_REPORT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#vsrc-loc-files" id="id190"><code class="docutils literal notranslate"><span class="pre">VSRC_LOC_FILES</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#signoff" id="id191">Signoff</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id32" id="id192">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#id33" id="id193">Descripción:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#primary-signoff-tool" id="id194"><code class="docutils literal notranslate"><span class="pre">PRIMARY_SIGNOFF_TOOL</span></code></a></p></li>
+<li><p><a class="reference internal" href="#use-arc-antenna-check" id="id195"><code class="docutils literal notranslate"><span class="pre">USE_ARC_ANTENNA_CHECK</span></code></a></p></li>
+<li><p><a class="reference internal" href="#run-cvc" id="id196"><code class="docutils literal notranslate"><span class="pre">RUN_CVC</span></code></a></p></li>
+<li><p><a class="reference internal" href="#signoff-sdc-file" id="id197"><code class="docutils literal notranslate"><span class="pre">SIGNOFF_SDC_FILE</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="floorplan-fp">
+<h2><a class="toc-backref" href="#id39" role="doc-backlink">Floorplan (FP)</a><a class="headerlink" href="#floorplan-fp" title="Link to this heading"></a></h2>
+<section id="configuracion-por-defecto">
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#configuracion-por-defecto" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/floorplan.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="fp-def">
+<a class="reference internal image-reference" href="_images/fp_var.png"><img alt="_images/fp_var.png" src="_images/fp_var.png" style="width: 651.2px; height: 565.6px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de floorplan.</span><a class="headerlink" href="#fp-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="descripcion-y-ejemplos">
+<h3><a class="toc-backref" href="#id41" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#descripcion-y-ejemplos" title="Link to this heading"></a></h3>
+<section id="run-tap-decap-insertion">
+<h4><a class="toc-backref" href="#id42" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_TAP_DECAP_INSERTION</span></code></a><a class="headerlink" href="#run-tap-decap-insertion" title="Link to this heading"></a></h4>
+<p>Permite la inserción de celdas tap y decap después de floorplan. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras deshabilitarlo se observa lo siguiente en el layout y la descripción de su área:</p>
+<figure class="align-center" id="fp-run-tap-decap-insertion">
+<img alt="_images/FP_RUN_TAP_DECAP_INSERTION.png" src="_images/FP_RUN_TAP_DECAP_INSERTION.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#fp-run-tap-decap-insertion" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde principalmente se puede ver que se elimina la cuadricula que produce las celdas tap y decap para la conexion con los sustratos.
+Además en el hierarchy solo se tiene el modulo principal (top), no se tienen ya las instancias físicas de las celdas fill y tap.</p>
+</section>
+<section id="fp-core-util">
+<h4><a class="toc-backref" href="#id43" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_CORE_UTIL</span></code></a><a class="headerlink" href="#fp-core-util" title="Link to this heading"></a></h4>
+<p>El porcentaje de utilización del núcleo. (Predeterminado: <cite>50%</cite>)</p>
+<p>Tras bajarlo a un 30 por ciento se tiene el siguiente resultado:</p>
+<figure class="align-center" id="fp-core-util-30">
+<img alt="_images/FP_CORE_UTIL_30.png" src="_images/FP_CORE_UTIL_30.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseno.</span><a class="headerlink" href="#fp-core-util-30" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa que para que la utilización se reduzca se tiene que aumentar el área disponible, que corresponde a el área física.
+La cual aumenta, de 4762 a 5890 <span class="math notranslate nohighlight">\(μm^{2}\)</span>, ya que se mantiene fija el área de las celdas.</p>
+</section>
+<section id="fp-aspect-ratio">
+<h4><a class="toc-backref" href="#id44" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_ASPECT_RATIO</span></code></a><a class="headerlink" href="#fp-aspect-ratio" title="Link to this heading"></a></h4>
+<p>La relación de aspecto del núcleo, se define como: alto/ancho. (Predeterminado: <cite>1</cite>)</p>
+<p>Al modificar esta relación a 0.5 se observa como el ancho pasa a ser el doble del alto en la siguiente imagen:</p>
+<figure class="align-center" id="fp-aspect-ratio-0-5">
+<img alt="_images/FP_ASPECT_RATIO_0.5.png" src="_images/FP_ASPECT_RATIO_0.5.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#fp-aspect-ratio-0-5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Además se modifica el placenta de los pines.</p>
+</section>
+<section id="fp-sizing">
+<h4><a class="toc-backref" href="#id45" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code></a><a class="headerlink" href="#fp-sizing" title="Link to this heading"></a></h4>
+<p>Determina si se va a utilizar un tamaño relativo, tomando lo definido por la variable <code class="docutils literal notranslate"><span class="pre">FP_CORE_UTIL</span></code>, o un tamaño absoluto, tomando lo definido por la variable <code class="docutils literal notranslate"><span class="pre">DIE_ARE</span></code>, en el floorplan. (Predeterminado: <cite>realtive/absolute</cite>)</p>
+</section>
+<section id="die-area">
+<h4><a class="toc-backref" href="#id46" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DIE_AREA</span></code></a><a class="headerlink" href="#die-area" title="Link to this heading"></a></h4>
+<p>Cuando <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> se establece en absoluto especifica el área muerta para utilizar en el floorplan. Se define como un rectángulo de 4 esquinas de la forma:  “x0 y0 x1 y1”. Unidades en μm. (Predeterminado: sin definir)</p>
+<p>Al aumentar este área muerta, que para se toma el área muerta predeterminada que tiene el diseño (0.0 0.0 459.285 470.005) se le agregan 200 μm a las coordenadas x1 y y1; además se mantiene fijo el área del núcleo.  Lo cual da como resultado el siguiente layout:</p>
+<figure class="align-center" id="id1">
+<img alt="_images/DIE_AREA.png" src="_images/DIE_AREA.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="core-area">
+<h4><a class="toc-backref" href="#id47" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code></a><a class="headerlink" href="#core-area" title="Link to this heading"></a></h4>
+<p>Cuando <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> se establece en absoluto especifica el área del núcleo, es decir el área muerta (<code class="docutils literal notranslate"><span class="pre">DIE_AREA</span></code>) menos los margenes. Se define como un rectángulo de 4 esquinas de la forma: “x0 y0 x1 y1”. Unidades en μm. (Predeterminado: sin definir)</p>
+<p>De forma similar al die area, al aumentar el área del núcleo a 200 μm en las coordenadas x1 y y1 esta vez se tiene que aumentar el <code class="docutils literal notranslate"><span class="pre">DIE_AREA</span></code> para que el flujo de diseño sea completado; lo cual esto produce que el layout se vea de la siguiente manera:</p>
+<figure class="align-center" id="id2">
+<img alt="_images/CORE_AREA.png" src="_images/CORE_AREA.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-mode">
+<h4><a class="toc-backref" href="#id48" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_MODE</span></code></a><a class="headerlink" href="#fp-io-mode" title="Link to this heading"></a></h4>
+<p>Decide el modo de la opción de colocación aleatoria de IOs. 0 = modo coincidente, 1 = modo equidistante aleatorio. El modo de coincidencia intenta optimizar la
+ubicación de pines y celdas. El modo equidistante aleatorio coloca pines equidistantes en un orden aleatorio. (Predeterminado: <cite>0</cite>)</p>
+<p>Al utilizar el modo equidistante se obtiene lo siguiente:</p>
+<figure class="align-center" id="id3">
+<img alt="_images/FP_IO_MODE.png" src="_images/FP_IO_MODE.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-welltap-cell">
+<h4><a class="toc-backref" href="#id49" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_WELLTAP_CELL</span></code></a><a class="headerlink" href="#fp-welltap-cell" title="Link to this heading"></a></h4>
+<p>El nombre de las celdas welltap utilizado durante para la inserción de welltap.</p>
+</section>
+<section id="fp-encap-cell">
+<h4><a class="toc-backref" href="#id50" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_ENCAP_CELL</span></code></a><a class="headerlink" href="#fp-encap-cell" title="Link to this heading"></a></h4>
+<p>El nombre de las celdas endcap utilizando durante le inserción de encap.</p>
+</section>
+<section id="fp-pdn-cfg">
+<h4><a class="toc-backref" href="#id51" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CFG</span></code></a><a class="headerlink" href="#fp-pdn-cfg" title="Link to this heading"></a></h4>
+<p>Apunta a un archivo de configuración de PDN que describe cómo construir el PDN en detalle. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">scripts/openroad/common/pdn_cfg.tcl</span></code>)</p>
+</section>
+<section id="fp-pdn-auto-adjust">
+<h4><a class="toc-backref" href="#id52" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_AUTO_ADJUST</span></code></a><a class="headerlink" href="#fp-pdn-auto-adjust" title="Link to this heading"></a></h4>
+<p>Decide si el flujo debe intentar reajustar la red eléctrica para que encaje dentro del área núcleo del diseño, si es necesario. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Al deshabilitar esta opción se observa lo siguiente:</p>
+<figure class="align-center" id="id4">
+<img alt="_images/FP_PDN_AUTO_ADJUST.png" src="_images/FP_PDN_AUTO_ADJUST.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis red eléctrica.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De la imagen anterior se tiene que la red eléctrica se mantiene igual, por lo que este parámetro no era necesario para este diseño.</p>
+</section>
+<section id="fp-pdn-skiptrim">
+<h4><a class="toc-backref" href="#id53" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_SKIPTRIM</span></code></a><a class="headerlink" href="#fp-pdn-skiptrim" title="Link to this heading"></a></h4>
+<p>Habilita la opción <code class="docutils literal notranslate"><span class="pre">-skip_trim</span></code> durante pdngen. El cual omite el paso de recorte de metal, encargado de intentar eliminar trozos de metal. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="fp-tapcell-dist">
+<h4><a class="toc-backref" href="#id54" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_TAPCELL_DIST</span></code></a><a class="headerlink" href="#fp-tapcell-dist" title="Link to this heading"></a></h4>
+<p>Distancia horizontal entre dos columnas de tapcell. (Predeterminado: <cite>14</cite>)</p>
+<p>Al reducir este valor a la mitad, revisando las instancias de las celdas welltap observamos que aumenta la cantidad de instancias.Como se observa en la siguiente imagen:</p>
+<figure class="align-center" id="fp-tapcell-dist-7">
+<img alt="_images/FP_TAPCELL_DIST_7.png" src="_images/FP_TAPCELL_DIST_7.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis instancias celdas welltap</span><a class="headerlink" href="#fp-tapcell-dist-7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Mientras que con su distancia predeterminada estas instancias se observan de la siguiente manera:</p>
+<figure class="align-center" id="fp-tapcell-dist-14">
+<img alt="_images/FP_TAPCELL_DIST_14.png" src="_images/FP_TAPCELL_DIST_14.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseno, énfasis instancias celdas welltap</span><a class="headerlink" href="#fp-tapcell-dist-14" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-vextend">
+<h4><a class="toc-backref" href="#id55" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_VEXTEND</span></code></a><a class="headerlink" href="#fp-io-vextend" title="Link to this heading"></a></h4>
+<p>Extiende los pines IOs verticales fuera del área muerta, en las unidades especificadas por esta (μm). (Predeterminado: <cite>0</cite> Desactivado)</p>
+<p>Al extenderlos una distancia de 10μm se observa lo siguiente:</p>
+<figure class="align-center" id="id5">
+<img alt="_images/FP_IO_VEXTEND.png" src="_images/FP_IO_VEXTEND.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs verticales.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-hextend">
+<h4><a class="toc-backref" href="#id56" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_HEXTEND</span></code></a><a class="headerlink" href="#fp-io-hextend" title="Link to this heading"></a></h4>
+<p>Extiende los pines IOs horizontales fuera del área muerta, en las unidades especificadas por esta (μm). (Predeterminado: <cite>0</cite> Desactivado)</p>
+<p>Al extenderlos una distancia de 10μm se observa lo siguiente:</p>
+<figure class="align-center" id="id6">
+<img alt="_images/FP_IO_HEXTEND.png" src="_images/FP_IO_HEXTEND.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs horizontales.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-vlength">
+<h4><a class="toc-backref" href="#id57" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLENGTH</span></code></a><a class="headerlink" href="#fp-io-vlength" title="Link to this heading"></a></h4>
+<p>La longitud de los pines IOs verticales en micrómetros. (Predeterminado: <cite>4</cite>)</p>
+<p>Los pines verticales se encuentran en la capa de metal2, por lo que revisando esta capa se tiene que para cuando tienen una longitud de 4 (valor predeterminado) son de la siguiente manera:</p>
+<figure class="align-center" id="fp-io-vlength-4">
+<img alt="_images/FP_IO_VLENGTH_4.png" src="_images/FP_IO_VLENGTH_4.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs verticales predeterminados.</span><a class="headerlink" href="#fp-io-vlength-4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Y al reducir su longitud a la mitad (2) de su valor predeterminado se tiene el siguiente resultado:</p>
+<figure class="align-center" id="fp-io-vlength-2">
+<img alt="_images/FP_IO_VLENGTH_2.png" src="_images/FP_IO_VLENGTH_2.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs verticales a la mitad de su longitud predeterminada.</span><a class="headerlink" href="#fp-io-vlength-2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-hlength">
+<h4><a class="toc-backref" href="#id58" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLENGTH</span></code></a><a class="headerlink" href="#fp-io-hlength" title="Link to this heading"></a></h4>
+<p>La longitud de los pines IOs horizontales en micrómetros. (Predeterminado: <cite>4</cite>)</p>
+<p>De forma similar a los pines verticales, los horizontales se encuentran en la capa de metal3 y al reducir su longitud a la mitad se tiene el siguiente resultado:</p>
+<figure class="align-center" id="fp-io-hlength-4">
+<img alt="_images/FP_IO_HLENGTH_4.png" src="_images/FP_IO_HLENGTH_4.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs horizontales predeterminados.</span><a class="headerlink" href="#fp-io-hlength-4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="fp-io-hlength-2">
+<img alt="_images/FP_IO_HLENGTH_2.png" src="_images/FP_IO_HLENGTH_2.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs horizontales a la mitad de su longitud predeterminada.</span><a class="headerlink" href="#fp-io-hlength-2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-vthickness-mult">
+<h4><a class="toc-backref" href="#id59" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_VTHICKNESS_MULT</span></code></a><a class="headerlink" href="#fp-io-vthickness-mult" title="Link to this heading"></a></h4>
+<p>Un multiplicador para el grosor de los pines IOs verticales. El grosoro base es el ancho mínimo de la capa de pines (Predeterminado: <cite>2</cite>)</p>
+<p>Al aumentar el ancho al doble de su valor predeterminado se observa lo siguiente:</p>
+<figure class="align-center" id="fp-io-vthickness-mult-4">
+<img alt="_images/FP_IO_VTHICKNESS_MULT_4.png" src="_images/FP_IO_VTHICKNESS_MULT_4.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs verticales a doble de su ancho predeterminado.</span><a class="headerlink" href="#fp-io-vthickness-mult-4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-hthickness-mult">
+<h4><a class="toc-backref" href="#id60" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_HTHICKNESS_MULT</span></code></a><a class="headerlink" href="#fp-io-hthickness-mult" title="Link to this heading"></a></h4>
+<p>Un multiplicador para el grosor de los pines IOs horizontales. El grosoro base es el ancho mínimo de la capa de pines (Predeterminado: <cite>2</cite>)</p>
+<p>De forma similar al parámetro anterior, al aumentarlo al doble se tiene:</p>
+<figure class="align-center" id="fp-io-hthickness-mult-4">
+<img alt="_images/FP_IO_HTHICKNESS_MULT_4.png" src="_images/FP_IO_HTHICKNESS_MULT_4.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs horizontales a doble de su ancho predeterminado.</span><a class="headerlink" href="#fp-io-hthickness-mult-4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="bottom-margin-mult">
+<h4><a class="toc-backref" href="#id61" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">BOTTOM_MARGIN_MULT</span></code></a><a class="headerlink" href="#bottom-margin-mult" title="Link to this heading"></a></h4>
+<p>El margen del núcleo, en múltiplos de las alturas del sitio, desde el límite inferior. Si <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> es absoluto y se establece <code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code>, esta variable no tiene ningún efecto. (Predeterminado: <cite>4</cite>)</p>
+<p>Al reducirlo a la mitad se observa en la siguiente imagen como el margen inferior disminuye:</p>
+<figure class="align-center" id="bottom-margin-mult-2">
+<img alt="_images/BOTTOM_MARGIN_MULT_2.png" src="_images/BOTTOM_MARGIN_MULT_2.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#bottom-margin-mult-2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="top-margin-mult">
+<h4><a class="toc-backref" href="#id62" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">TOP_MARGIN_MULT</span></code></a><a class="headerlink" href="#top-margin-mult" title="Link to this heading"></a></h4>
+<p>El margen del núcleo, en múltiplos de las alturas del sitio, desde el límite superior. Si <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> es absoluto y se establece <code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code>, esta variable no tiene ningún efecto. (Predeterminado: <cite>4</cite>)</p>
+<p>Al reducirlo a la mitad se observa en la siguiente imagen como el margen superior disminuye:</p>
+<figure class="align-center" id="top-margin-mult-2">
+<img alt="_images/TOP_MARGIN_MULT_2.png" src="_images/TOP_MARGIN_MULT_2.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#top-margin-mult-2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="left-margin-mult">
+<h4><a class="toc-backref" href="#id63" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">LEFT_MARGIN_MULT</span></code></a><a class="headerlink" href="#left-margin-mult" title="Link to this heading"></a></h4>
+<p>El margen del núcleo, en múltiplos de los anchos del sitio, desde el límite izquierdo. Si <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> es absoluto y se establece <code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code>, esta variable no tiene ningún efecto. (Predeterminado: <cite>12</cite>)</p>
+<p>Al reducirlo a 8 se observa en la siguiente imagen que el margen izquierdo disminuye, además esto produce también que el placement de los IOs cambie, esto se observa en la siguiente imagen:</p>
+<figure class="align-center" id="left-margin-mult-8">
+<img alt="_images/LEFT_MARGIN_MULT_8.png" src="_images/LEFT_MARGIN_MULT_8.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#left-margin-mult-8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="right-margin-mult">
+<h4><a class="toc-backref" href="#id64" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RIGHT_MARGIN_MULT</span></code></a><a class="headerlink" href="#right-margin-mult" title="Link to this heading"></a></h4>
+<p>El margen del núcleo, en múltiplos de los anchos del sitio, desde el límite derecho. Si <code class="docutils literal notranslate"><span class="pre">FP_SIZING</span></code> es absoluto y se establece <code class="docutils literal notranslate"><span class="pre">CORE_AREA</span></code>, esta variable no tiene ningún efecto. (Predeterminado: <cite>4</cite>)</p>
+<p>De forma similar al parámetro anterior al reducirlo a 8 ahora se observa que es el margen derecho el que se reduce.</p>
+<figure class="align-center" id="right-margin-mult-8">
+<img alt="_images/RIGHT_MARGIN_MULT_8.png" src="_images/RIGHT_MARGIN_MULT_8.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#right-margin-mult-8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-pdn-core-ring">
+<h4><a class="toc-backref" href="#id65" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CORE_RING</span></code></a><a class="headerlink" href="#fp-pdn-core-ring" title="Link to this heading"></a></h4>
+<p>Permite agregar un anillo central alrededor del diseño. Más detalles sobre las variables de control en la documentación de configuraciones de pdk. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>0</cite>)</p>
+<p>Al habilitar esta opción este anillo se observa de la siguiente manera:</p>
+<figure class="align-center" id="id7">
+<img alt="_images/FP_PDN_CORE_RING.png" src="_images/FP_PDN_CORE_RING.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis anillo red eléctrica.</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-pdn-enable-global-connections">
+<h4><a class="toc-backref" href="#id66" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE__GLOBAL_CONNECTIONS</span></code></a><a class="headerlink" href="#fp-pdn-enable-global-connections" title="Link to this heading"></a></h4>
+<p>Permite la conexión a la alimentación de las celdas estándar. Es raro que sea necesario deshabilitar esta variable (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="fp-pdn-enable-rails">
+<h4><a class="toc-backref" href="#id67" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_RAILS</span></code></a><a class="headerlink" href="#fp-pdn-enable-rails" title="Link to this heading"></a></h4>
+<p>Habilita la creación de carriles en la red eléctrica. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Al deshabilitarlo se la red eléctrica del diseño se observa de la siguiente manera:</p>
+<figure class="align-center" id="id8">
+<img alt="_images/FP_PDN_ENABLE_RAILS.png" src="_images/FP_PDN_ENABLE_RAILS.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis red eléctrica.</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-pdn-enable-macros-grid">
+<h4><a class="toc-backref" href="#id68" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_ENABLE_MACROS_GRID</span></code></a><a class="headerlink" href="#fp-pdn-enable-macros-grid" title="Link to this heading"></a></h4>
+<p>Permite la conexión de macros a la red eléctrica de primer nivel. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="fp-pdn-macro-hooks">
+<h4><a class="toc-backref" href="#id69" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_MACRO_HOOKS</span></code></a><a class="headerlink" href="#fp-pdn-macro-hooks" title="Link to this heading"></a></h4>
+<p>Especifica conexiones explícitas de macros internas a la nivel superior de la red eléctrica como: una lista de nombres de instancias de macros, vdd de dominio de energía, nombres de redes de tierra, nombres de vdd de macros y pines de tierra; lo cual es: <code class="docutils literal notranslate"><span class="pre">&lt;instance_name&gt;</span> <span class="pre">&lt;vdd_net&gt;</span> <span class="pre">&lt;gnd_net&gt;</span> <span class="pre">&lt;vdd_pin&gt;</span> <span class="pre">&lt;gnd_pin&gt;</span></code>. Mientras que en una archivo .JSON declárelo como una matriz de cadenas y en Tcl, use comas como delimitador.</p>
+</section>
+<section id="fp-pdn-check-nodes">
+<h4><a class="toc-backref" href="#id70" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_CHECK_NODES</span></code></a><a class="headerlink" href="#fp-pdn-check-nodes" title="Link to this heading"></a></h4>
+<p>Permite comprobar si hay nodos no conectados en la red eléctrica. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="fp-tap-horizontal-halo">
+<h4><a class="toc-backref" href="#id71" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_TAP_HORIZONTAL_HALO</span></code></a><a class="headerlink" href="#fp-tap-horizontal-halo" title="Link to this heading"></a></h4>
+<p>Especifica el tamaño del anillo horizontal alrededor de las macros durante la inserción de celdas tap. El valor proporcionado está en micrómetros. (Predeterminado: <cite>10</cite>)</p>
+</section>
+<section id="fp-tap-vertical-halo">
+<h4><a class="toc-backref" href="#id72" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_TAP_VERTICAL_HALO</span></code></a><a class="headerlink" href="#fp-tap-vertical-halo" title="Link to this heading"></a></h4>
+<p>Especifica el tamaño del anillo vertical alrededor de las macros durante la inserción de celdas tap. El valor proporcionado está en micrómetros. (Predeterminado: <cite>10</cite>)</p>
+</section>
+<section id="fp-pdn-horizontal-halo">
+<h4><a class="toc-backref" href="#id73" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_HORIZONTAL_HALO</span></code></a><a class="headerlink" href="#fp-pdn-horizontal-halo" title="Link to this heading"></a></h4>
+<p>Establece el anillo horizontal alrededor de las macros durante la inserción de la red eléctrica. El valor proporcionado está en micrómetros. (Predeterminado: <cite>10</cite>)</p>
+</section>
+<section id="fp-pdn-vertical-halo">
+<h4><a class="toc-backref" href="#id74" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PDN_VERTICAL_HALO</span></code></a><a class="headerlink" href="#fp-pdn-vertical-halo" title="Link to this heading"></a></h4>
+<p>Establece el anillo vertical alrededor de las macros durante la inserción de la red eléctrica. El valor proporcionado está en micrómetros. (Predeterminado: <cite>10</cite>)</p>
+</section>
+<section id="design-is-core">
+<h4><a class="toc-backref" href="#id75" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DESIGN_IS_CORE</span></code></a><a class="headerlink" href="#design-is-core" title="Link to this heading"></a></h4>
+<p>Controla las capas utilizadas en la red eléctrica. Dependiendo de si el diseño es el núcleo del chip o una macro dentro del núcleo. 1 = core, 0 = macro. (Predeterminado: <cite>1</cite>)</p>
+<p>Al establecerlo como macro, la red eléctrica es lo único que cambia y queda de la siguiente manera:</p>
+<figure class="align-center" id="id9">
+<img alt="_images/DESIGN_IS_CORE.png" src="_images/DESIGN_IS_CORE.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis red eléctrica.</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-pin-order-cfg">
+<h4><a class="toc-backref" href="#id76" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PIN_ORDER_CFG</span></code></a><a class="headerlink" href="#fp-pin-order-cfg" title="Link to this heading"></a></h4>
+<p>Apunta al archivo de configuración del orden de los pines para configurar los pines en direcciones específicas (S, W, E, N).
+Si no se configura, los pines IO se colocarán según uno de los otros métodos dependiendo del resto de las configuraciones.</p>
+<p>También se puede utilizar <code class="docutils literal notranslate"><span class="pre">$&lt;number&gt;</span></code> para colocar un pin virtual donde <code class="docutils literal notranslate"><span class="pre">&lt;number&gt;</span></code> indica, este es el contador de pines virtuales. Y <code class="docutils literal notranslate"><span class="pre">&#64;min_distance=&lt;number&gt;</span></code> se utiliza para establecer la distancia mínima entre pines en una dirección específica.</p>
+<p>Un ejemplo de como se vería este archivo de configuración es el siguiente:</p>
+<figure class="align-center" id="id10">
+<img alt="_images/FP_PIN_ORDER_CFG.png" src="_images/FP_PIN_ORDER_CFG.png" />
+<figcaption>
+<p><span class="caption-text">Ejemplo archivo configuración orden de pines.</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-io-min-distance">
+<h4><a class="toc-backref" href="#id77" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_MIN_DISTANCE</span></code></a><a class="headerlink" href="#fp-io-min-distance" title="Link to this heading"></a></h4>
+<p>La distancia mínima entre los pines IOs en micrones. (Predeterminado: <cite>3</cite>)</p>
+<p>A su distancia predeterminada los IOs del diseño son de la siguiente manera:</p>
+<figure class="align-center" id="fp-io-min-distance-3">
+<img alt="_images/FP_IO_MIN_DISTANCE_3.png" src="_images/FP_IO_MIN_DISTANCE_3.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs.</span><a class="headerlink" href="#fp-io-min-distance-3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Al reducir esta distancia a la mitad, se observa lo siguiente en los IOs del diseño:</p>
+<figure class="align-center" id="fp-io-h-min-distance-1-5">
+<img alt="_images/FP_IO_H_MIN_DISTANCE_1.5.png" src="_images/FP_IO_H_MIN_DISTANCE_1.5.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs horizontales.</span><a class="headerlink" href="#fp-io-h-min-distance-1-5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="fp-io-v-min-distance-1-5">
+<img alt="_images/FP_IO_V_MIN_DISTANCE_1.5.png" src="_images/FP_IO_V_MIN_DISTANCE_1.5.png" />
+<figcaption>
+<p><span class="caption-text">Pines IOs verticales.</span><a class="headerlink" href="#fp-io-v-min-distance-1-5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="fp-padframe-cfg">
+<h4><a class="toc-backref" href="#id78" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_PADFRAME_CFG</span></code></a><a class="headerlink" href="#fp-padframe-cfg" title="Link to this heading"></a></h4>
+<p>Un archivo de configuración pasado a padringer, un generador de padframe. (Predeterminado: NINGUNO)</p>
+</section>
+</section>
+</section>
+<section id="variables-de-capa-i-o">
+<h2><a class="toc-backref" href="#id79" role="doc-backlink">Variables de capa I/O</a><a class="headerlink" href="#variables-de-capa-i-o" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3><a class="toc-backref" href="#id80" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<section id="fp-io-hlayer">
+<h4><a class="toc-backref" href="#id81" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_HLAYER</span></code></a><a class="headerlink" href="#fp-io-hlayer" title="Link to this heading"></a></h4>
+<p>Capa de metal en la cual se colocan los pines horizontales. (Predeterminado: <cite>4</cite>)</p>
+<p>Al colocar los pines horizontales en la capa de metal 2 se obtiene el siguiente layout:</p>
+<figure class="align-center" id="fp-io-layer">
+<img alt="_images/FP_IO_LAYER.png" src="_images/FP_IO_LAYER.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#fp-io-layer" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde el cambio de color a morado corresponde a la capa de metal 2.</p>
+</section>
+<section id="fp-io-vlayer">
+<h4><a class="toc-backref" href="#id82" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">FP_IO_VLAYER</span></code></a><a class="headerlink" href="#fp-io-vlayer" title="Link to this heading"></a></h4>
+<p>Capa de metal en la cual se colocan los pines verticales. (Predeterminado: <cite>3</cite>)</p>
+<p>Al colocar los pines horizontales en la capa de metal 5 se tiene el layout anterior en donde el cambio de color a celeste corresponde
+a la capa de metal 5.</p>
+</section>
+</section>
+</section>
+<section id="todos-los-pasos-para-el-resizer-rsz">
+<h2><a class="toc-backref" href="#id83" role="doc-backlink">Todos los pasos para el Resizer (RSZ)</a><a class="headerlink" href="#todos-los-pasos-para-el-resizer-rsz" title="Link to this heading"></a></h2>
+<section id="descripcion">
+<h3><a class="toc-backref" href="#id84" role="doc-backlink">Descripción:</a><a class="headerlink" href="#descripcion" title="Link to this heading"></a></h3>
+<section id="rsz-lib">
+<h4><a class="toc-backref" href="#id85" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB</span></code></a><a class="headerlink" href="#rsz-lib" title="Link to this heading"></a></h4>
+<p>Apunta a uno o más archivos lib, correspondientes a la esquina típica, que se utiliza durante las optimizaciones
+del resizer. (Predeterminado: establecido en el valor de <code class="docutils literal notranslate"><span class="pre">LIB_SYNTH</span></code> de los PDK’s)</p>
+</section>
+<section id="rsz-lib-fastest">
+<h4><a class="toc-backref" href="#id86" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_FASTEST</span></code></a><a class="headerlink" href="#rsz-lib-fastest" title="Link to this heading"></a></h4>
+<p>Apunta a uno o más archivos lib, correspondientes a la esquina mas rápida, que se utiliza durante las optimizaciones
+del resizer. (Predeterminado: establecido en el valor de <code class="docutils literal notranslate"><span class="pre">LIB_FASTEST</span></code> de los PDK’s)</p>
+</section>
+<section id="rsz-lib-slowest">
+<h4><a class="toc-backref" href="#id87" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_LIB_SLOWEST</span></code></a><a class="headerlink" href="#rsz-lib-slowest" title="Link to this heading"></a></h4>
+<p>Apunta a uno o más archivos lib, correspondientes a la esquina mas lenta, que se utiliza durante las optimizaciones
+del resizer. (Predeterminado: establecido en el valor de <code class="docutils literal notranslate"><span class="pre">LIB_SLOWEST</span></code> de los PDK’s)</p>
+</section>
+<section id="rsz-multicorner-lib">
+<h4><a class="toc-backref" href="#id88" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_MULTICORNER_LIB</span></code></a><a class="headerlink" href="#rsz-multicorner-lib" title="Link to this heading"></a></h4>
+<p>Una bandera para leer las esquinas más rápida y más lenta durante las optimizaciones del resizer.
+(Predeterminado: 1)</p>
+</section>
+<section id="rsz-dont-touch-rx">
+<h4><a class="toc-backref" href="#id89" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH_RX</span></code></a><a class="headerlink" href="#rsz-dont-touch-rx" title="Link to this heading"></a></h4>
+<p>Una única expresión regular que designa las redes como “no tocar” por las optimizaciones de resizer.
+(Predeterminado: <code class="docutils literal notranslate"><span class="pre">$^</span></code> (no coincide con nada))</p>
+</section>
+<section id="rsz-dont-touch">
+<h4><a class="toc-backref" href="#id90" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RSZ_DONT_TOUCH</span></code></a><a class="headerlink" href="#rsz-dont-touch" title="Link to this heading"></a></h4>
+<p>Una lista de redes o instancias para configurar como “no tocar”. (Predeterminado: Vacío)</p>
+</section>
+</section>
+</section>
+<section id="placement-global-y-detallado-gpl-dpl">
+<h2><a class="toc-backref" href="#id91" role="doc-backlink">Placement Global y Detallado (GPL/DPL)</a><a class="headerlink" href="#placement-global-y-detallado-gpl-dpl" title="Link to this heading"></a></h2>
+<section id="id12">
+<h3><a class="toc-backref" href="#id92" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/placement.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="pl-def">
+<a class="reference internal image-reference" href="_images/pl_var.png"><img alt="_images/pl_var.png" src="_images/pl_var.png" style="width: 389.6px; height: 405.6px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de síntesis.</span><a class="headerlink" href="#pl-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id13">
+<h3><a class="toc-backref" href="#id93" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="pl-target-density">
+<h4><a class="toc-backref" href="#id94" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_TARGET_DENSITY</span></code></a><a class="headerlink" href="#pl-target-density" title="Link to this heading"></a></h4>
+<p>Define la densidad de placement deseada de las celdas. Refleja qué tan dispersas estarían las celdas en el área del núcleo. 1 = muy denso. 0 = ampliamente difundido.
+(Predeterminado: <code class="docutils literal notranslate"><span class="pre">($::env(FP_CORE_UTIL)</span> <span class="pre">+</span> <span class="pre">10</span> <span class="pre">+</span> <span class="pre">(5</span> <span class="pre">*</span> <span class="pre">$::env(GPL_CELL_PADDING))</span> <span class="pre">)</span> <span class="pre">/</span> <span class="pre">100.0)</span></code>)</p>
+<p>Utilizando su valor máximo para tener la mayor densidad se observa como las instancias están mas juntas y ocupan menor área, lo cual se observa en la siguiente imagen:</p>
+<figure class="align-center" id="pl-target-density-1">
+<img alt="_images/PL_TARGET_DENSITY_1.png" src="_images/PL_TARGET_DENSITY_1.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#pl-target-density-1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>También al tener mayor densidad produce que se disminuya el área y el consumo de potencia.</p>
+</section>
+<section id="pl-time-driven">
+<h4><a class="toc-backref" href="#id95" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_TIME_DRIVEN</span></code></a><a class="headerlink" href="#pl-time-driven" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe realizar la ubicación basada en el tiempo. 0 = falso, 1 = verdadero. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras desactivar esta función se observa en la siguiente imagen como se modifica el placement y se observa menos densidad, ya que aumenta el área y se mantiene igual la cantidad de instancias.</p>
+<figure class="align-center" id="id14">
+<img alt="_images/PL_TIME_DRIVEN.png" src="_images/PL_TIME_DRIVEN.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id14" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Pero vemos de los reportes de sta como en general no genera muchos cambios en el timing.</p>
+</section>
+<section id="pl-basic-placement">
+<h4><a class="toc-backref" href="#id96" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_BASIC_PLACEMENT</span></code></a><a class="headerlink" href="#pl-basic-placement" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe ejecutar colocación básica. El placement básico se utiliza para diseños extremadamente simples y de baja densidad de solo unas pocas docenas de puertas; debe desactivarse para la mayoría de los diseños. 0 = falso, 1 = verdadero. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="pl-skip-initial-placement">
+<h4><a class="toc-backref" href="#id97" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_SKIP_INITIAL_PLACEMENT</span></code></a><a class="headerlink" href="#pl-skip-initial-placement" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe ejecutar el placement inicial o no. 0 = falso, 1 = verdadero. (Predeterminado: <cite>0</cite>)</p>
+<p>Al desactivar el placement inicial se observa como en la siguiente imagen el placement en la esquina superior izquierda se
+ve bastante modificado, ademas de igual manera se disminuye la densidad.</p>
+<figure class="align-center" id="id15">
+<img alt="_images/PL_SKIP_INITIAL_PLACEMENT.png" src="_images/PL_SKIP_INITIAL_PLACEMENT.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id15" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>El principal efecto que tiene desactivar este parametro es en los reportes de sta se aumentan las violaciones de slew, ya que el placement inicial ayuda a optimizar el tiempo de llegada de la señal de reloj.</p>
+</section>
+<section id="pl-random-glb-placement">
+<h4><a class="toc-backref" href="#id98" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_GLB_PLACEMENT</span></code></a><a class="headerlink" href="#pl-random-glb-placement" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe ejecutar una colocación aleatoria o no. Esto resulta útil si el diseño es pequeño (menos de 100 celdas). 0 = falso, 1 = verdadero. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="pl-random-initial-placement">
+<h4><a class="toc-backref" href="#id99" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RANDOM_INITIAL_PLACEMENT</span></code></a><a class="headerlink" href="#pl-random-initial-placement" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe ejecutar una placement aleatoria en el placement inicial. Esto resulta útil si el diseño es pequeño (menos de 100 celdas). 0 = falso, 1 = verdadero. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="pl-routability-driven">
+<h4><a class="toc-backref" href="#id100" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_ROUTABILITY_DRIVEN</span></code></a><a class="headerlink" href="#pl-routability-driven" title="Link to this heading"></a></h4>
+<p>Especifica si el placer debe utilizar la ubicación basada en la enrutabilidad. 0 = falso, 1 = verdadero. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="pl-resizer-tie-seperation">
+<h4><a class="toc-backref" href="#id101" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIE_SEPERATION</span></code></a><a class="headerlink" href="#pl-resizer-tie-seperation" title="Link to this heading"></a></h4>
+<p>Distancia en micrómetros entre la carga y una celda de unión insertada. El resizer utiliza este valor. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="pl-resizer-design-optimizations">
+<h4><a class="toc-backref" href="#id102" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a><a class="headerlink" href="#pl-resizer-design-optimizations" title="Link to this heading"></a></h4>
+<p>Especifica si el resizer debe realizar o no optimizaciones  en el diseño. 0 = falso, 1 = verdadero. (Predeterminado: <cite>1</cite>)</p>
+<p>Lo cual al desactivarlo produce los siguientes cambios en el layout:</p>
+<figure class="align-center" id="id16">
+<img alt="_images/PL_RESIZER_DESIGN_OPTIMIZATIONS.png" src="_images/PL_RESIZER_DESIGN_OPTIMIZATIONS.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#id16" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa que principalmente de su reporte de área como esta aumenta, a pesar de que disminuye considerablemente la cantidad de instancias, esto se debe a que comparando con el reporte de la configuración por defecto, vemos que esta variable introduce buffers/inversores por las optimizaciones que realiza en el diseño.</p>
+</section>
+<section id="pl-resizer-timing-optimizations">
+<h4><a class="toc-backref" href="#id103" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_TIMING_OPTIMIZATIONS</span></code></a><a class="headerlink" href="#pl-resizer-timing-optimizations" title="Link to this heading"></a></h4>
+<p>Especifica si el resizer debe realizar o no optimizaciones de tiempo. 0 = falso, 1 = verdadero. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="pl-resizer-max-wire-length">
+<h4><a class="toc-backref" href="#id104" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_WIRE_LENGTH</span></code></a><a class="headerlink" href="#pl-resizer-max-wire-length" title="Link to this heading"></a></h4>
+<p>Especifica el límite de longitud máxima del cable utilizado por el resizer para insertar buffers. Si se establece en 0, no se insertarán buffers. Valor en micrómetros. (Predeterminado: <cite>0</cite>)</p>
+<p>Utilizando un valor mucho menor al por defecto, de 50, se tiene el siguiente registro del resizer:</p>
+<figure class="align-center" id="resizer-log-pl-resizer-max-wire-length-50">
+<img alt="_images/resizer-log_PL_RESIZER_MAX_WIRE_LENGTH_50.png" src="_images/resizer-log_PL_RESIZER_MAX_WIRE_LENGTH_50.png" />
+<figcaption>
+<p><span class="caption-text">Registro del resizer, etapa placement.</span><a class="headerlink" href="#resizer-log-pl-resizer-max-wire-length-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde vemos que como se esta poniendo menos que su valor por defecto va a producir que aumente el retraso en ellos; lo cual se ve reflejado en el análisis sta donde el setup se reduce drásticamente ya que el tiempo de llegada aumenta.</p>
+<p>Además se encuentran 1426 cables que exceden el limite establecido, lo cual produce que se inserten muchos mas buffers.
+Esto se puede observan en el reporte de área y en el layout de la siguiente imagen:</p>
+<figure class="align-center" id="pl-resizer-max-wire-length-50">
+<img alt="_images/PL_RESIZER_MAX_WIRE_LENGTH_50.png" src="_images/PL_RESIZER_MAX_WIRE_LENGTH_50.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#pl-resizer-max-wire-length-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="pl-resizer-max-slew-margin">
+<h4><a class="toc-backref" href="#id105" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_SLEW_MARGIN</span></code></a><a class="headerlink" href="#pl-resizer-max-slew-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen para los slews en porcentaje para el resizer. (Predeterminado: <cite>20</cite>)</p>
+</section>
+<section id="pl-resizer-max-cap-margin">
+<h4><a class="toc-backref" href="#id106" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_CAP_MARGIN</span></code></a><a class="headerlink" href="#pl-resizer-max-cap-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen máximo para las capacitancias en porcentajes para el resizer. (Predeterminado: <cite>20</cite>)</p>
+</section>
+<section id="pl-resizer-hold-slack-margin">
+<h4><a class="toc-backref" href="#id107" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_SLACK_MARGIN</span></code></a><a class="headerlink" href="#pl-resizer-hold-slack-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen de tiempo para el slack al corregir violaciones de hold. Normalmente, el resizer se detendrá cuando el slack llegue a cero. Esta opción le permite sobrefijar. (Predeterminado: <cite>0.1ns</cite>)</p>
+</section>
+<section id="pl-resizer-setup-slack-margin">
+<h4><a class="toc-backref" href="#id108" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_SLACK_MARGIN</span></code></a><a class="headerlink" href="#pl-resizer-setup-slack-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen de tiempo para el salck al corregir violaciones de setup. (Predeterminado: <cite>0.05ns</cite>)</p>
+</section>
+<section id="pl-resizer-hold-max-buffer-percent">
+<h4><a class="toc-backref" href="#id109" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a><a class="headerlink" href="#pl-resizer-hold-max-buffer-percent" title="Link to this heading"></a></h4>
+<p>Especifica un cantidad máxima de buffers para insertar al para corregir violaciones de hold. Este número se calcula como un porcentaje del número de instancias en el diseño. (Predeterminado: <cite>50</cite>)</p>
+</section>
+<section id="pl-resizer-setup-max-buffer-percent">
+<h4><a class="toc-backref" href="#id110" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a><a class="headerlink" href="#pl-resizer-setup-max-buffer-percent" title="Link to this heading"></a></h4>
+<p>Especifica un cantidad máxima de buffers para insertar al para corregir violaciones de setup. Este número se calcula como un porcentaje del número de instancias en el diseño. (Predeterminado: 50)</p>
+</section>
+<section id="pl-resizer-allow-setup-vios">
+<h4><a class="toc-backref" href="#id111" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_ALLOW_SETUP_VIOS</span></code></a><a class="headerlink" href="#pl-resizer-allow-setup-vios" title="Link to this heading"></a></h4>
+<p>Permite violaciones de setup al corregir violaciones de hold. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="pl-wirelength-coef">
+<h4><a class="toc-backref" href="#id112" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_WIRELENGTH_COEF</span></code></a><a class="headerlink" href="#pl-wirelength-coef" title="Link to this heading"></a></h4>
+<p>Coeficiente de longitud de cable inicial en placement global. Disminuir la variable modificará el placement inicial de las celdas estándar para reducir las longitudes de los cables. (Predeterminado: <cite>0.25</cite>)</p>
+<p>Probando con aumentar este valor al doble (0.5) se observa lo siguiente en el layout:</p>
+<figure class="align-center" id="pl-wirelength-coef-50">
+<img alt="_images/PL_WIRELENGTH_COEF_0.5.png" src="_images/PL_WIRELENGTH_COEF_0.5.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño.</span><a class="headerlink" href="#pl-wirelength-coef-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa que se tiene la misma cantidad de instancias, pero como se esta utilizando mayor longitud de cable esto produce que se aumente el área y el placement cambie completamente comparado con el modelo de referencia. También de sus reportes de sta vemos que aumentar el largo de los cables afecta directamente el slew aumentando las violaciones y
+en menor manera las capacitancias parásitas para la etapa de placement global, ya en el detallado este propio resizer lo llega a solucionar y elimina estas violaciones.</p>
+</section>
+<section id="dont-use-cells">
+<h4><a class="toc-backref" href="#id113" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DONT_USE_CELLS</span></code></a><a class="headerlink" href="#dont-use-cells" title="Link to this heading"></a></h4>
+<p>Lista de celdas para no utilizar en las optimizaciones del resizer. (Predeterminado: contenidos de <code class="docutils literal notranslate"><span class="pre">DRC_EXCLUDE_CELL_LIST</span></code>)</p>
+</section>
+<section id="pl-estimate-parasitics">
+<h4><a class="toc-backref" href="#id114" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_ESTIMATE_PARASITICS</span></code></a><a class="headerlink" href="#pl-estimate-parasitics" title="Link to this heading"></a></h4>
+<p>Especifica si se debe ejecutar o no STA después del placement global utilizando OpenROAD’s estimate_parasitics -placement y generar reportes en <code class="docutils literal notranslate"><span class="pre">logs/placement</span></code>. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="pl-optimize-mirroring">
+<h4><a class="toc-backref" href="#id115" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_OPTIMIZE_MIRRORING</span></code></a><a class="headerlink" href="#pl-optimize-mirroring" title="Link to this heading"></a></h4>
+<p>Especifica si se debe o no ejecutar optimize_mirroring cada vez que se ocurre un placement detallado. Esto reflejará las celdas siempre que sea posible para optimizar el diseño. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras desactivar esta opción se observa lo siguiente en el registro del resizer:</p>
+<figure class="align-center" id="resizer-log-pl-optimize-mirroring">
+<img alt="_images/resizer-log_PL_OPTIMIZE_MIRRORING.png" src="_images/resizer-log_PL_OPTIMIZE_MIRRORING.png" />
+<figcaption>
+<p><span class="caption-text">Registro del resizer.</span><a class="headerlink" href="#resizer-log-pl-optimize-mirroring" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>En donde una vez se realiza el análisis del placement, no se realiza mirroring en el placement detallado ya que no da ningún mensaje de información en comparación con el registro del modelo de referencia, en donde se indica la cantidad de celdas reflejadas.</p>
+</section>
+<section id="pl-resizer-buffer-input-ports">
+<h4><a class="toc-backref" href="#id116" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_INPUT_PORTS</span></code></a><a class="headerlink" href="#pl-resizer-buffer-input-ports" title="Link to this heading"></a></h4>
+<p>Especifica si se insertan o no buffers en los puertos de entrada cada vez que se ejecutan optimizaciones de resizer. Para utilizar esto, <code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATION</span></code> debe  establecerse en 1. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras deshabilitarlo las instancias en los puertos de salida se observan de la siguiente manera:</p>
+<figure class="align-center" id="id17">
+<img alt="_images/PL_RESIZER_BUFFER_INPUT_PORTS.png" src="_images/PL_RESIZER_BUFFER_INPUT_PORTS.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis puertos de entrada</span><a class="headerlink" href="#id17" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>En donde de su reporte de área, se observa que disminuye la cantidad de buffers en los puertos de 242 a 208.</p>
+</section>
+<section id="pl-resizer-buffer-output-ports">
+<h4><a class="toc-backref" href="#id117" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_OUTPUT_PORTS</span></code></a><a class="headerlink" href="#pl-resizer-buffer-output-ports" title="Link to this heading"></a></h4>
+<p>Especifica si se insertan o no buffers en los puertos de salida cada vez que se ejecutan optimizaciones de resizer. Para utilizar esto, <code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATION</span></code> debe establecerse en 1. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras deshabilitarlo las instancias en los puertos de salida se observan de la siguiente manera:</p>
+<figure class="align-center" id="id18">
+<img alt="_images/PL_RESIZER_BUFFER_OUTPUT_PORTS.png" src="_images/PL_RESIZER_BUFFER_OUTPUT_PORTS.png" />
+<figcaption>
+<p><span class="caption-text">Layout del diseño, énfasis puertos de salida</span><a class="headerlink" href="#id18" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>En donde de su reporte de área, se observa que disminuye la cantidad de buffers en los puertos de 242 a 38.</p>
+</section>
+<section id="pl-resizer-repair-tie-fanout">
+<h4><a class="toc-backref" href="#id118" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_REPAIR_TIE_FANOUT</span></code></a><a class="headerlink" href="#pl-resizer-repair-tie-fanout" title="Link to this heading"></a></h4>
+<p>Especifica si si debe o no repara reparar el fanout de las celdas tie cuando se corren optimizaciones del resizer. Para utilizar esto, <code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code> debe establecerse en 1. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="pl-max-displacement-x">
+<h4><a class="toc-backref" href="#id119" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_X</span></code></a><a class="headerlink" href="#pl-max-displacement-x" title="Link to this heading"></a></h4>
+<p>Especifica hasta qué punto se puede mover una instancia a lo largo del eje X al encontrar un sitio donde se puede colocar durante el placement detallado. (Predeterminado: <cite>500</cite> μm)</p>
+</section>
+<section id="pl-max-displacement-y">
+<h4><a class="toc-backref" href="#id120" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_MAX_DISPLACEMENT_Y</span></code></a><a class="headerlink" href="#pl-max-displacement-y" title="Link to this heading"></a></h4>
+<p>Especifica hasta qué punto se puede mover una instancia a lo largo del eje Y al encontrar un sitio donde se puede colocar durante el placement detallado. (Predeterminado: <cite>100</cite> μm)</p>
+</section>
+<section id="pl-macro-halo">
+<h4><a class="toc-backref" href="#id121" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_HALO</span></code></a><a class="headerlink" href="#pl-macro-halo" title="Link to this heading"></a></h4>
+<p>Espacio de colocación macros. Formato: {Horizontal} {Vertical}. (Predeterminado: <cite>0 0</cite> μm).</p>
+</section>
+<section id="pl-macro-channel">
+<h4><a class="toc-backref" href="#id122" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PL_MACRO_CHANNEL</span></code></a><a class="headerlink" href="#pl-macro-channel" title="Link to this heading"></a></h4>
+<p>Anchos de canal entre macros. Formato: {Horizontal} {Vertical}. (Predeterminado: <cite>0 0</cite> μm).</p>
+</section>
+<section id="macro-placement-cfg">
+<h4><a class="toc-backref" href="#id123" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">MACRO_PLACEMENT_CFG</span></code></a><a class="headerlink" href="#macro-placement-cfg" title="Link to this heading"></a></h4>
+<p>Especifica la ruta de un archivo que especifica cómo Openlane debe colocar ciertas macros.</p>
+</section>
+</section>
+<section id="resumen-de-resultados">
+<h3><a class="toc-backref" href="#id124" role="doc-backlink">Resumen de resultados:</a><a class="headerlink" href="#resumen-de-resultados" title="Link to this heading"></a></h3>
+<p>Se va a comparar, en porcentajes, cuanto vario con respecto al modelo de referencia los parámetros mas importantes para esta etapa al modificar cada variable. Los valores de las variables son los mismo utilizados anteriormente, de modo que se tienen los siguientes resultados para cada etapa de placement:</p>
+<table class="docutils align-center" id="id34">
+<caption><span class="caption-text">Comparación de parámetros con el modelo de referencia, etapa de placement global</span><a class="headerlink" href="#id34" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Chip Area</p></th>
+<th class="head"><p>Potencia</p></th>
+<th class="head"><p>Peor Setup</p></th>
+<th class="head"><p>Peor Hold</p></th>
+<th class="head"><p>Violaciones Slew</p></th>
+<th class="head"><p>Violaciones Fanout</p></th>
+<th class="head"><p>Violaciones Cap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_TARGET_DENSITY</span></code></p></td>
+<td><p>-0.844</p></td>
+<td><p>-2.57</p></td>
+<td><p>2.12</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_TIME_DRIVEN</span></code></p></td>
+<td><p>0.0923</p></td>
+<td><p>0</p></td>
+<td><p>-0.706</p></td>
+<td><p>0</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_SKIP_INITIAL_PLACEMENT</span></code></p></td>
+<td><p>0.0119</p></td>
+<td><p>0</p></td>
+<td><p>-0.353</p></td>
+<td><p>0</p></td>
+<td><p>9</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code></p></td>
+<td><p>0.187</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_WIRE_LENGTH</span></code></p></td>
+<td><p>21.5</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_WIRELENGTH_COEF</span></code></p></td>
+<td><p>0.506</p></td>
+<td><p>1.28</p></td>
+<td><p>-3.88</p></td>
+<td><p>0</p></td>
+<td><p>33</p></td>
+<td><p>0</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_INPUT_PORTS</span></code></p></td>
+<td><p>-0.240</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_OUTPUT_PORTS</span></code></p></td>
+<td><p>-0.773</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-center" id="id35">
+<caption><span class="caption-text">Comparación de parámetros con el modelo de referencia, etapa de placement detallado</span><a class="headerlink" href="#id35" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Chip Area</p></th>
+<th class="head"><p>Potencia</p></th>
+<th class="head"><p>Peor Setup</p></th>
+<th class="head"><p>Peor Hold</p></th>
+<th class="head"><p>Violaciones Slew</p></th>
+<th class="head"><p>Violaciones Fanout</p></th>
+<th class="head"><p>Violaciones Cap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_TARGET_DENSITY</span></code></p></td>
+<td><p>-0.844</p></td>
+<td><p>-0.889</p></td>
+<td><p>3.738</p></td>
+<td><p>5.56</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_TIME_DRIVEN</span></code></p></td>
+<td><p>0.0923</p></td>
+<td><p>0</p></td>
+<td><p>0.311</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_SKIP_INITIAL_PLACEMENT</span></code></p></td>
+<td><p>0.0119</p></td>
+<td><p>-0.444</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_DESIGN_OPTIMIZATIONS</span></code></p></td>
+<td><p>0.187</p></td>
+<td><p>4.44</p></td>
+<td><p>-14.6</p></td>
+<td><p>-5.56</p></td>
+<td><p>22</p></td>
+<td><p>4</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_MAX_WIRE_LENGTH</span></code></p></td>
+<td><p>21.5</p></td>
+<td><p>15.6</p></td>
+<td><p>-73.83</p></td>
+<td><p>5.56</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_WIRELENGTH_COEF</span></code></p></td>
+<td><p>0.506</p></td>
+<td><p>1.77</p></td>
+<td><p>-3.11</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_INPUT_PORTS</span></code></p></td>
+<td><p>-0.240</p></td>
+<td><p>-0.445</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PL_RESIZER_BUFFER_OUTPUT_PORTS</span></code></p></td>
+<td><p>-0.773</p></td>
+<td><p>-0.889</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="sintesis-del-arbol-de-reloj-cts">
+<h2><a class="toc-backref" href="#id125" role="doc-backlink">Síntesis del árbol de reloj (CTS)</a><a class="headerlink" href="#sintesis-del-arbol-de-reloj-cts" title="Link to this heading"></a></h2>
+<section id="id19">
+<h3><a class="toc-backref" href="#id126" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/cts.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="cts-def">
+<a class="reference internal image-reference" href="_images/cts_var.png"><img alt="_images/cts_var.png" src="_images/cts_var.png" style="width: 355.20000000000005px; height: 170.4px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de síntesis.</span><a class="headerlink" href="#cts-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id20">
+<h3><a class="toc-backref" href="#id127" role="doc-backlink">Descripcion y ejemplos:</a><a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<section id="run-cts">
+<h4><a class="toc-backref" href="#id128" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_CTS</span></code></a><a class="headerlink" href="#run-cts" title="Link to this heading"></a></h4>
+<p>Habilite la síntesis del árbol de reloj. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="run-fill-insertion">
+<h4><a class="toc-backref" href="#id129" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_FILL_INSERTION</span></code></a><a class="headerlink" href="#run-fill-insertion" title="Link to this heading"></a></h4>
+<p>Habilita la inserción de celdas de relleno después de cts (si es posible). 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="cts-sink-clustering-size">
+<h4><a class="toc-backref" href="#id130" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_SIZE</span></code></a><a class="headerlink" href="#cts-sink-clustering-size" title="Link to this heading"></a></h4>
+<p>Especifica el número máximo de receptores por cluster. (Predeterminado: <cite>25</cite>)</p>
+<p>Al disminuir este valor a 8 se tiene la siguiente información en el registro de esta etapa:</p>
+<figure class="align-center" id="cts-log-cts-sink-clustering-size-8">
+<img alt="_images/cts-log_CTS_SINK_CLUSTERING_SIZE_8.png" src="_images/cts-log_CTS_SINK_CLUSTERING_SIZE_8.png" />
+<figcaption>
+<p><span class="caption-text">Registro etapa cts.</span><a class="headerlink" href="#cts-log-cts-sink-clustering-size-8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Lo cual produce los siguientes cambios en el layout de esta etapa:</p>
+<figure class="align-center" id="cts-sink-clustering-size-8">
+<img alt="_images/CTS_SINK_CLUSTERING_SIZE_8.png" src="_images/CTS_SINK_CLUSTERING_SIZE_8.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa cts.</span><a class="headerlink" href="#cts-sink-clustering-size-8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa principalmente que se tiene mas instancias de buffers/inversores en el árbol de reloj, aumentado de 184 a 232. Lo cual produce un pequeño aumento en el área y además reduce significativamente las violaciones de fanout de 68 a 15, lo cual es significativamente positivo.</p>
+</section>
+<section id="cts-sink-clustering-max-diameter">
+<h4><a class="toc-backref" href="#id131" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_MAX_DIAMETER</span></code></a><a class="headerlink" href="#cts-sink-clustering-max-diameter" title="Link to this heading"></a></h4>
+<p>Especifica el diámetro máximo (en micrómetros) del receptor por clúster. (Predeterminado: <cite>50</cite>)</p>
+<p>Al reducir este diámetro a la mitad de su valor predeterminado (25) se tiene la siguiente información en el registro de esta etapa:</p>
+<figure class="align-center" id="cts-log-cts-sink-clustering-max-diameter-25">
+<img alt="_images/cts-log_CTS_SINK_CLUSTERING_MAX_DIAMETER_25.png" src="_images/cts-log_CTS_SINK_CLUSTERING_MAX_DIAMETER_25.png" />
+<figcaption>
+<p><span class="caption-text">Registro etapa cts.</span><a class="headerlink" href="#cts-log-cts-sink-clustering-max-diameter-25" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Lo cual de forma similar a la variable anterior produce un aumento mayor en la cantidad de buffers/inversores en el árbol
+de reloj, aumentado a mas de doble a 494. Lo cual produce un mayor aumento en el área y reduce en mayor medida las
+violaciones de fanout. Lo cual se observa en la siguiente imagen del layout:</p>
+<figure class="align-center" id="cts-sink-clustering-max-diameter-25">
+<img alt="_images/CTS_SINK_CLUSTERING_MAX_DIAMETER_25.png" src="_images/CTS_SINK_CLUSTERING_MAX_DIAMETER_25.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa cts.</span><a class="headerlink" href="#cts-sink-clustering-max-diameter-25" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="cts-report-timing">
+<h4><a class="toc-backref" href="#id132" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_REPORT_TIMING</span></code></a><a class="headerlink" href="#cts-report-timing" title="Link to this heading"></a></h4>
+<p>Especifica si se debe ejecutar o no STA después de la síntesis del árbol de reloj utilizando OpenROAD’s estimate_parasitics -placement y generar genera informes en <code class="docutils literal notranslate"><span class="pre">logs/cts</span></code>. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="cts-clk-max-wire-length">
+<h4><a class="toc-backref" href="#id133" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_CLK_MAX_WIRE_LENGTH</span></code></a><a class="headerlink" href="#cts-clk-max-wire-length" title="Link to this heading"></a></h4>
+<p>Especifica la longitud máxima del cable en la red del reloj. Valor en micrómetros. (Predeterminado: <cite>0</cite>)</p>
+<p>Al utilizar un valor de 50, se produce lo siguiente en el registro de esta etapa:</p>
+<figure class="align-center" id="cts-log-cts-clk-max-wire-length-50">
+<img alt="_images/cts-log_CTS_CLK_MAX_WIRE_LENGTH_50.png" src="_images/cts-log_CTS_CLK_MAX_WIRE_LENGTH_50.png" />
+<figcaption>
+<p><span class="caption-text">Registro etapa cts.</span><a class="headerlink" href="#cts-log-cts-clk-max-wire-length-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Lo cual se ve reflejado en el reporte de área y el layout de la siguiente manera:</p>
+<figure class="align-center" id="cts-clk-max-wire-length-50">
+<img alt="_images/CTS_CLK_MAX_WIRE_LENGTH_50.png" src="_images/CTS_CLK_MAX_WIRE_LENGTH_50.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa cts.</span><a class="headerlink" href="#cts-clk-max-wire-length-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Además esto produce un aumento considerable en el skew, pasando de 0.24 a 1.07 por aumento en la latencia de
+la señal de reloj.</p>
+</section>
+<section id="cts-disable-post-processing">
+<h4><a class="toc-backref" href="#id134" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_DISABLE_POST_PROCESSING</span></code></a><a class="headerlink" href="#cts-disable-post-processing" title="Link to this heading"></a></h4>
+<p>Especifica si se deshabilita o no el procesamiento posterior a cts para receptores atípicos. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="cts-distance-between-buffers">
+<h4><a class="toc-backref" href="#id135" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_DISTANCE_BETWEEN_BUFFERS</span></code></a><a class="headerlink" href="#cts-distance-between-buffers" title="Link to this heading"></a></h4>
+<p>Especifica la distancia (en micrómetros) entre buffers al crear  el árbol de reloj. (Predeterminado: <cite>0</cite>)</p>
+<p>Utilizando un valor de 50 um, se tiene la siguiente información en el registro de esta etapa:</p>
+<figure class="align-center" id="cts-log-cts-distance-between-buffers-50">
+<img alt="_images/cts-log_CTS_DISTANCE_BETWEEN_BUFFERS_50.png" src="_images/cts-log_CTS_DISTANCE_BETWEEN_BUFFERS_50.png" />
+<figcaption>
+<p><span class="caption-text">Registro etapa cts.</span><a class="headerlink" href="#cts-log-cts-distance-between-buffers-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="lib-cts">
+<h4><a class="toc-backref" href="#id136" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">LIB_CTS</span></code></a><a class="headerlink" href="#lib-cts" title="Link to this heading"></a></h4>
+<p>El archivo biblioteca utilizado para CTS para las esquina típica. De forma predeterminada, este es <code class="docutils literal notranslate"><span class="pre">LIB_SYNTH</span></code> menos las
+celdas con errores de drc según lo especificado en la lista de exclusión de drc. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">$::env(cts_tmpfiles)/cts.lib</span></code>)</p>
+</section>
+<section id="lib-cts-slowest">
+<h4><a class="toc-backref" href="#id137" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_SLOWEST</span></code></a><a class="headerlink" href="#lib-cts-slowest" title="Link to this heading"></a></h4>
+<p>El archivo biblioteca utilizado para CTS para las esquina mas lenta. De forma predeterminada, este es <code class="docutils literal notranslate"><span class="pre">LIB_CTS_SLOWEST</span></code> menos las celdas con errores de drc según lo especificado en la lista de exclusión de drc. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">$::env(cts_tmpfiles)/cts-slowest.lib</span></code>)</p>
+</section>
+<section id="lib-cts-fastest">
+<h4><a class="toc-backref" href="#id138" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">LIB_CTS_FASTEST</span></code></a><a class="headerlink" href="#lib-cts-fastest" title="Link to this heading"></a></h4>
+<p>El archivo biblioteca utilizado para CTS para las esquina mas rapida. De forma predeterminada, este es <code class="docutils literal notranslate"><span class="pre">LIB_CTS_FASTEST</span></code> menos las celdas con errores de drc según lo especificado en la lista de exclusión de drc. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">$::env(cts_tmpfiles)/cts-fastest.lib</span></code>)</p>
+</section>
+<section id="cts-multicorner-lib">
+<h4><a class="toc-backref" href="#id139" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">CTS_MULTICORNER_LIB</span></code></a><a class="headerlink" href="#cts-multicorner-lib" title="Link to this heading"></a></h4>
+<p>Una bandera para leer las esquinas mas rapida y lenta durante CTS. (Predeterminado: <cite>1</cite>)</p>
+</section>
+</section>
+<section id="id21">
+<h3><a class="toc-backref" href="#id140" role="doc-backlink">Resumen de resultados:</a><a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<p>Se va a comparar, en porcentajes, cuanto vario con respecto al modelo de referencia los parámetros mas importantes para esta etapa al modificar cada variable. Los valores de las variables son los mismo utilizados anteriormente, de modo que se tienen los siguientes resultados para la etapa de cts:</p>
+<table class="docutils align-center" id="id36">
+<caption><span class="caption-text">Comparación de parámetros con el modelo de referencia, etapa de cts</span><a class="headerlink" href="#id36" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Chip Area</p></th>
+<th class="head"><p>Potencia</p></th>
+<th class="head"><p>Peor Setup</p></th>
+<th class="head"><p>Peor Hold</p></th>
+<th class="head"><p>Skew</p></th>
+<th class="head"><p>Violaciones Slew</p></th>
+<th class="head"><p>Violaciones Fanout</p></th>
+<th class="head"><p>Violaciones Cap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_SIZE</span></code></p></td>
+<td><p>1.15</p></td>
+<td><p>3.27</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4.16</p></td>
+<td><p>0</p></td>
+<td><p>-53</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CTS_SINK_CLUSTERING_MAX_DIAMETER</span></code></p></td>
+<td><p>7.40</p></td>
+<td><p>22.2</p></td>
+<td><p>-0.93</p></td>
+<td><p>0</p></td>
+<td><p>-4.16</p></td>
+<td><p>0</p></td>
+<td><p>-66</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CTS_CLK_MAX_WIRE_LENGTH</span></code></p></td>
+<td><p>0.535</p></td>
+<td><p>1.45</p></td>
+<td><p>-24.9</p></td>
+<td><p>-482</p></td>
+<td><p>345</p></td>
+<td><p>0</p></td>
+<td><p>-11</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CTS_DISTANCE_BETWEEN_BUFFERS</span></code></p></td>
+<td><p>0.18</p></td>
+<td><p>0.364</p></td>
+<td><p>0.311</p></td>
+<td><p>0</p></td>
+<td><p>8.33</p></td>
+<td><p>0</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="routing-global-y-detallado-grt-drt">
+<h2><a class="toc-backref" href="#id141" role="doc-backlink">Routing global y detallado (GRT/DRT)</a><a class="headerlink" href="#routing-global-y-detallado-grt-drt" title="Link to this heading"></a></h2>
+<section id="id22">
+<h3><a class="toc-backref" href="#id142" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/routing.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="rt-def">
+<a class="reference internal image-reference" href="_images/rt_var.png"><img alt="_images/rt_var.png" src="_images/rt_var.png" style="width: 615.2px; height: 596.8000000000001px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las routing</span><a class="headerlink" href="#rt-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id23">
+<h3><a class="toc-backref" href="#id143" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<section id="run-drt">
+<h4><a class="toc-backref" href="#id144" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_DRT</span></code></a><a class="headerlink" href="#run-drt" title="Link to this heading"></a></h4>
+<p>Habilita routing detallado. 1 = Habilitado, 0 = Deshabilitado (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="global-router">
+<h4><a class="toc-backref" href="#id145" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLOBAL_ROUTER</span></code></a><a class="headerlink" href="#global-router" title="Link to this heading"></a></h4>
+<p>Especifica cual routing global usar. Valores: <code class="docutils literal notranslate"><span class="pre">fastroute</span></code>. (<code class="docutils literal notranslate"><span class="pre">cugr</span></code> está en desuso). (Predeterminado: <code class="docutils literal notranslate"><span class="pre">fastroute</span></code>)</p>
+</section>
+<section id="detailed-router">
+<h4><a class="toc-backref" href="#id146" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DETAILED_ROUTER</span></code></a><a class="headerlink" href="#detailed-router" title="Link to this heading"></a></h4>
+<p>Especifica qué routing detallado usar. Valores: <code class="docutils literal notranslate"><span class="pre">tritonroute</span></code>. (<code class="docutils literal notranslate"><span class="pre">drcu/tritonroute_or</span></code> están obsoletos). (Predeterminado: <code class="docutils literal notranslate"><span class="pre">tritonroute</span></code>)</p>
+</section>
+<section id="routing-cores">
+<h4><a class="toc-backref" href="#id147" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">ROUTING_CORES</span></code></a><a class="headerlink" href="#routing-cores" title="Link to this heading"></a></h4>
+<p>Especifica el número de subprocesos que se utilizarán en TritonRoute. Se puede anular mediante una variable de entorno. (Predeterminado: <cite>2</cite>)</p>
+<p>Al aumentarlo al doble de subprocesos de su valor predeterminado se obtiene la siguiente información en el registro de la subetapa de routing detallado:</p>
+<figure class="align-center" id="detailed-log-routing-cores-4">
+<img alt="_images/detailed-log_ROUTING_CORES_4.png" src="_images/detailed-log_ROUTING_CORES_4.png" />
+<figcaption>
+<p><span class="caption-text">Registro subetapa routing detallado.</span><a class="headerlink" href="#detailed-log-routing-cores-4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Lo cual produce un reducción en el tiempo de duración de esta subetapa optimizando TritonRoute.</p>
+</section>
+<section id="rt-clock-min-layer">
+<h4><a class="toc-backref" href="#id148" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MIN_LAYER</span></code></a><a class="headerlink" href="#rt-clock-min-layer" title="Link to this heading"></a></h4>
+<p>El nombre de la capa más baja que se utilizará para enrutar la red del reloj. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">RT_MIN_LAYER</span></code>)</p>
+</section>
+<section id="rt-clock-max-layer">
+<h4><a class="toc-backref" href="#id149" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RT_CLOCK_MAX_LAYER</span></code></a><a class="headerlink" href="#rt-clock-max-layer" title="Link to this heading"></a></h4>
+<p>El nombre de la capa más alta que se utilizará para enrutar la red del reloj. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">RT_MAX_LAYER</span></code>)</p>
+</section>
+<section id="glb-resizer-timing-optimizations">
+<h4><a class="toc-backref" href="#id150" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_TIMING_OPTIMIZATIONS</span></code></a><a class="headerlink" href="#glb-resizer-timing-optimizations" title="Link to this heading"></a></h4>
+<p>Especifica si las optimizaciones de tiempo del resizer deben realizarse después del routing global o no. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Tras desactivar estas optimizaciones se produce que ligeramente el tiempo de llegada de los datos aumente disminuye el setup slack de 4.09 a 3.87. Además el layout se modifica ligeramente de la siguiente manera:</p>
+<figure class="align-center" id="id24">
+<img alt="_images/GLB_RESIZER_TIMING_OPTIMIZATIONS.png" src="_images/GLB_RESIZER_TIMING_OPTIMIZATIONS.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa routing.</span><a class="headerlink" href="#id24" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa de su registro de área que los principales cambios son producto de menor instancias de buffers/inversores de optimizaciones de temporización, lo cual a su vez modifica ligeramente las instancias de la parte fisica. En general esto produce que se reduzca ligeramente el área.</p>
+</section>
+<section id="glb-resizer-design-optimizations">
+<h4><a class="toc-backref" href="#id151" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_DESIGN_OPTIMIZATIONS</span></code></a><a class="headerlink" href="#glb-resizer-design-optimizations" title="Link to this heading"></a></h4>
+<p>Especifica si las optimizaciones del diseño del resizer deben realizarse después del routing global o no. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Al desactivar estas optimizaciones se produce un aumento considerablemente de las violaciones de fanout, pasando de 102 a 123. Además el layout se modifica ligeramente de la siguiente manera:</p>
+<figure class="align-center" id="id25">
+<img alt="_images/GLB_RESIZER_DESIGN_OPTIMIZATIONS.png" src="_images/GLB_RESIZER_DESIGN_OPTIMIZATIONS.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa routing.</span><a class="headerlink" href="#id25" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="glb-resizer-max-wire-length">
+<h4><a class="toc-backref" href="#id152" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_WIRE_LENGTH</span></code></a><a class="headerlink" href="#glb-resizer-max-wire-length" title="Link to this heading"></a></h4>
+<p>Especifica el límite de longitud máxima del cable utilizado por el resizer para insertar buffers. Si se establece en 0, no se insertarán buffers. Valor en micrómetros. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="glb-resizer-max-slew-margin">
+<h4><a class="toc-backref" href="#id153" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_SLEW_MARGIN</span></code></a><a class="headerlink" href="#glb-resizer-max-slew-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen para el slew. (Predeterminado: <cite>10</cite>)</p>
+<p>Al aumentar este margen 10 veces su valor determinado, se obtiene la siguiente información en el registro del resizer:</p>
+<figure class="align-center" id="resizer-log-glb-resizer-max-slew-margin-100">
+<img alt="_images/resizer-log_GLB_RESIZER_MAX_SLEW_MARGIN_100.png" src="_images/resizer-log_GLB_RESIZER_MAX_SLEW_MARGIN_100.png" />
+<figcaption>
+<p><span class="caption-text">Registro del resizer de la etapa routing.</span><a class="headerlink" href="#resizer-log-glb-resizer-max-slew-margin-100" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Donde se observa que al aumentar este margen produce que se detectan 10687 violaciones de slew que produce el redimensionamiento de 425 instancias; que al comprar con la cantidad de instancias redimensionadas del modelo de referencia, se tienen 12 instancias mas.</p>
+</section>
+<section id="glb-resizer-max-cap-margin">
+<h4><a class="toc-backref" href="#id154" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_CAP_MARGIN</span></code></a><a class="headerlink" href="#glb-resizer-max-cap-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen para las capacitancias. (Predeterminado: <cite>10</cite>)</p>
+<p>Al aumentar este margen 5 veces su valor determinado, se obtiene la siguiente información en el registro del resizer:</p>
+<figure class="align-center" id="resizer-log-glb-resizer-max-cap-margin-50">
+<img alt="_images/resizer-log_GLB_RESIZER_MAX_CAP_MARGIN_50.png" src="_images/resizer-log_GLB_RESIZER_MAX_CAP_MARGIN_50.png" />
+<figcaption>
+<p><span class="caption-text">Registro del resizer de la etapa routing.</span><a class="headerlink" href="#resizer-log-glb-resizer-max-cap-margin-50" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Se observa que al aumentar este margen se produce 2 violaciones de capacitancias y para solucionarlas se inserta 1 buffer en 2 nets. Además se tienen 1 instancia mas redimensionada en comparación con el modelo de referencia.</p>
+</section>
+<section id="glb-resizer-hold-slack-margin">
+<h4><a class="toc-backref" href="#id155" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_SLACK_MARGIN</span></code></a><a class="headerlink" href="#glb-resizer-hold-slack-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen de tiempo para el slack al corregir violaciones de hold. Normalmente, el resizer se detendrá cuando llegue a cero slack. Esta opción le permite sobrefijar. (Predeterminado: <cite>0.05</cite> ns)</p>
+</section>
+<section id="glb-resizer-setup-slack-margin">
+<h4><a class="toc-backref" href="#id156" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_SLACK_MARGIN</span></code></a><a class="headerlink" href="#glb-resizer-setup-slack-margin" title="Link to this heading"></a></h4>
+<p>Especifica un margen de tiempo para el salck al corregir violaciones de setup. (Predeterminado: <cite>0.025</cite> ns)</p>
+</section>
+<section id="glb-resizer-hold-max-buffer-percent">
+<h4><a class="toc-backref" href="#id157" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_HOLD_MAX_BUFFER_PERCENT</span></code></a><a class="headerlink" href="#glb-resizer-hold-max-buffer-percent" title="Link to this heading"></a></h4>
+<p>Especifica una cantidad máxima de buffers que se insertarán para corregir violaciones de hold. Este número se calcula como un porcentaje del número de instancias en el diseño. (Predeterminado: <cite>50</cite>)</p>
+</section>
+<section id="glb-resizer-setup-max-buffer-percent">
+<h4><a class="toc-backref" href="#id158" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_SETUP_MAX_BUFFER_PERCENT</span></code></a><a class="headerlink" href="#glb-resizer-setup-max-buffer-percent" title="Link to this heading"></a></h4>
+<p>Especifica una cantidad máxima de buffers que se insertarán para corregir violaciones de setup. Este número se calcula como un porcentaje del número de instancias en el diseño. (Predeterminado: <cite>50</cite>)</p>
+</section>
+<section id="glb-resizer-allow-setup-vios">
+<h4><a class="toc-backref" href="#id159" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_ALLOW_SETUP_VIOS</span></code></a><a class="headerlink" href="#glb-resizer-allow-setup-vios" title="Link to this heading"></a></h4>
+<p>Permite violaciones de setup al corregir hold. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="glb-optimize-mirroring">
+<h4><a class="toc-backref" href="#id160" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GLB_OPTIMIZE_MIRRORING</span></code></a><a class="headerlink" href="#glb-optimize-mirroring" title="Link to this heading"></a></h4>
+<p>Especifica si se ejecuta o no optimize_mirroring cada vez que define un placement detallado de una instancia después de las
+optimizaciones de tiempo del routing. Esto reflejará las celdas siempre que sea posible para optimizar el diseño. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+<p>Al deshabilitar estas optimizaciónes se tiene la siguiente información del registro del resizer:</p>
+<figure class="align-center" id="resizer-log-glb-optimize-mirroring">
+<img alt="_images/resizer-log_GLB_OPTIMIZE_MIRRORING.png" src="_images/resizer-log_GLB_OPTIMIZE_MIRRORING.png" />
+<figcaption>
+<p><span class="caption-text">Registro del resizer de la etapa routing.</span><a class="headerlink" href="#resizer-log-glb-optimize-mirroring" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Donde vemos que al comprar con el registro del modelo de referencia, no se reflejan 4605 instancias.</p>
+</section>
+<section id="grt-allow-congestion">
+<h4><a class="toc-backref" href="#id161" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_ALLOW_CONGESTION</span></code></a><a class="headerlink" href="#grt-allow-congestion" title="Link to this heading"></a></h4>
+<p>Permitir congestión en las guías resultantes. 0 = falso, 1 = verdadero. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="grt-overflow-iters">
+<h4><a class="toc-backref" href="#id162" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_OVERFLOW_ITERS</span></code></a><a class="headerlink" href="#grt-overflow-iters" title="Link to this heading"></a></h4>
+<p>El número máximo de iteraciones en espera de que el desbordamiento alcance el valor deseado. (Predeterminado: <cite>50</cite>)</p>
+</section>
+<section id="grt-ant-iters">
+<h4><a class="toc-backref" href="#id163" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_ITERS</span></code></a><a class="headerlink" href="#grt-ant-iters" title="Link to this heading"></a></h4>
+<p>El número máximo de iteraciones para repair_antenna del routing global. Esta opción solo está disponible cuando <code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code> está habilitado. (Predeterminado: <cite>15</cite>)</p>
+<p>Al reducir la cantidad de iteraciones a 3 vemos que se tiene la siguiente información en el registro de routing global:</p>
+<figure class="align-center" id="global-log-grt-ant-iters-3">
+<img alt="_images/global-log_GRT_ANT_ITERS_3.png" src="_images/global-log_GRT_ANT_ITERS_3.png" />
+<figcaption>
+<p><span class="caption-text">Registro de routing global.</span><a class="headerlink" href="#global-log-grt-ant-iters-3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Comparando con el registro de routing global del modelo de referencia se observa que se tiene una iteración menos  por lo que produce que quedan pendientes 6 violaciones de antenna.</p>
+</section>
+<section id="grt-ant-margin">
+<h4><a class="toc-backref" href="#id164" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_ANT_MARGIN</span></code></a><a class="headerlink" href="#grt-ant-margin" title="Link to this heading"></a></h4>
+<p>El margen, en porcentaje, para corregir violaciones de antena en el routing global. Esta opción solo está disponible cuando <code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code> está habilitado. (Predeterminado: <cite>10</cite>)</p>
+<p>Al aumenter este margen al doble de su valor se tiene la siguiente información en el registro de routing global:</p>
+<figure class="align-center" id="global-log-grt-ant-margin-20">
+<img alt="_images/global-log_GRT_ANT_MARGIN_20.png" src="_images/global-log_GRT_ANT_MARGIN_20.png" />
+<figcaption>
+<p><span class="caption-text">Registro de routing global.</span><a class="headerlink" href="#global-log-grt-ant-margin-20" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Comparando con el registro de routing global del modelo de referencia se tiene que se ocupa 1 iteracion mas para completar lograr eliminar las violaciones de antenna, desde la primer iteración se encuentran 8 violaciones mas y se inserta una mayor cantidad diodos. Lo cual todo esto produce los siguientes cambios en el layout:</p>
+<figure class="align-center" id="grt-ant-margin-20">
+<img alt="_images/GRT_ANT_MARGIN_20.png" src="_images/GRT_ANT_MARGIN_20.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa de routing.</span><a class="headerlink" href="#grt-ant-margin-20" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde la mayor diferencia con el modelo de referencia es en el aumento significativo en las instancias de antenna, como se observa en el reporte de area de la imagen anterior que hay 379 instancias que son 102 mas. Esto a su vez produce cambios en el diseño físico y área del chip.</p>
+</section>
+<section id="grt-estimate-parasitics">
+<h4><a class="toc-backref" href="#id165" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_ESTIMATE_PARASITICS</span></code></a><a class="headerlink" href="#grt-estimate-parasitics" title="Link to this heading"></a></h4>
+<p>Especifica si se debe ejecutar o no STA después del routing global usando OpenROAD’s estimate_parasitics -global_routing
+y generar informes en <code class="docutils literal notranslate"><span class="pre">logs/routing</span></code>. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: 1)</p>
+</section>
+<section id="grt-max-diode-ins-iters">
+<h4><a class="toc-backref" href="#id166" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_MAX_DIODE_INS_ITERS</span></code></a><a class="headerlink" href="#grt-max-diode-ins-iters" title="Link to this heading"></a></h4>
+<p>Controla el número máximo de iteraciones en las que se detiene la repetición de Fastroute para la inserción de diodos. En cada iteración, ARC detecta las infracciones y FastRoute las corrige insertando diodos y luego produciendo el nuevo DEF. El número de violaciones de antena se compara con la iteración anterior y si son iguales o el número es mayor las iteraciones se detienen y el DEF de la iteración anterior se utiliza en el resto del flujo. Si las violaciones actuales de la antena llegan a cero, se utilizará la definición actual y las iteraciones no continuarán. Esta opción solo está disponible cuando <code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code> está habilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="grt-repair-antennas">
+<h4><a class="toc-backref" href="#id167" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code></a><a class="headerlink" href="#grt-repair-antennas" title="Link to this heading"></a></h4>
+<p>Habilita el flujo para evadir antena de OpenROAD’s. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="grt-obs">
+<h4><a class="toc-backref" href="#id168" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_OBS</span></code></a><a class="headerlink" href="#grt-obs" title="Link to this heading"></a></h4>
+<p>Especifica la obstrucción personalizada que se agregará antes del routing global como capa y coordenadas en el formato <code class="docutils literal notranslate"><span class="pre">layer</span> <span class="pre">llx</span> <span class="pre">lly</span> <span class="pre">urx</span> <span class="pre">ury</span></code>; donde: <code class="docutils literal notranslate"><span class="pre">ll</span></code> y <code class="docutils literal notranslate"><span class="pre">ur</span></code> “representan inferior izquierda” y “superior derecha”, respectivamente por sus siglas en ingles. En JSON, se declaran como una matriz de caracteres y en Tcl se utilizan comas como delimitador. (Ejemplo: <code class="docutils literal notranslate"><span class="pre">li1</span> <span class="pre">0</span> <span class="pre">100</span> <span class="pre">1000</span> <span class="pre">300,</span> <span class="pre">met5</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">1000</span> <span class="pre">500</span></code>). (Predeterminado: no definido)</p>
+</section>
+<section id="grt-adjustment">
+<h4><a class="toc-backref" href="#id169" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_ADJUSTMENT</span></code></a><a class="headerlink" href="#grt-adjustment" title="Link to this heading"></a></h4>
+<p>Reducción de la capacidad de routing de los bordes entre las celdas en el grafo de routing global. Los valores varían de 0 a 1. 1 = mayor reducción, 0 = menor reducción. (Predeterminado: <cite>0.3</cite>)</p>
+<p>Al reducir esta capacidad a 0.1 se obtiene el siguiente layout:</p>
+<figure class="align-center" id="grt-adjustment-0-1">
+<img alt="_images/GRT_ADJUSTMENT_0.1.png" src="_images/GRT_ADJUSTMENT_0.1.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa de routing.</span><a class="headerlink" href="#grt-adjustment-0-1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa considerables cambio en el metal donde se ve reducido, a su vez disminuye el area fisica y las instancias de antenna.</p>
+</section>
+<section id="grt-macro-extension">
+<h4><a class="toc-backref" href="#id170" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">GRT_MACRO_EXTENSION</span></code></a><a class="headerlink" href="#grt-macro-extension" title="Link to this heading"></a></h4>
+<p>Establece la cantidad de GCells agregadas a los límites de los bloqueos desde las macros. Una GCell normalmente se define en términos de pistas de routing Mx. El tamaño predeterminado de GCell es de 15 pasos M3. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="drt-min-layer">
+<h4><a class="toc-backref" href="#id171" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DRT_MIN_LAYER</span></code></a><a class="headerlink" href="#drt-min-layer" title="Link to this heading"></a></h4>
+<p>Una anulación opcional de la capa más baja utilizada en el routing detallado. Por ejemplo, en sky130, es posible que desee que el routing global evite li1, pero permita que el routing detallado use li1 si es necesario. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">RT_MIN_LAYER</span></code>)</p>
+</section>
+<section id="drt-max-layer">
+<h4><a class="toc-backref" href="#id172" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DRT_MAX_LAYER</span></code></a><a class="headerlink" href="#drt-max-layer" title="Link to this heading"></a></h4>
+<p>Una anulación opcional de la capa más alta utilizada en el routing detallado. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">RT_MAX_LAYER</span></code>)</p>
+</section>
+<section id="drt-opt-iters">
+<h4><a class="toc-backref" href="#id173" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DRT_OPT_ITERS</span></code></a><a class="headerlink" href="#drt-opt-iters" title="Link to this heading"></a></h4>
+<p>Especifica el número máximo de iteraciones de optimización durante el routing detallado en TritonRoute. (Predeterminado: <cite>64</cite>)</p>
+<p>Al reducir el numero de iteraciones a 3, se obtiene la siguiente información en el registro de routing detallado:</p>
+<figure class="align-center" id="detailed-log-drt-opt-iters-3">
+<img alt="_images/detailed-log_DRT_OPT_ITERS_3.png" src="_images/detailed-log_DRT_OPT_ITERS_3.png" />
+<figcaption>
+<p><span class="caption-text">Registro etapa routing detallado.</span><a class="headerlink" href="#detailed-log-drt-opt-iters-3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa que esto producen 1290 violaciones pendientes que resolver, ya que al compara con el registro del modelo de referencia estas violaciones pendientes se resuelven el doble de iteraciones.</p>
+</section>
+</section>
+<section id="id26">
+<h3><a class="toc-backref" href="#id174" role="doc-backlink">Resumen de resultados:</a><a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<p>Se va a comparar, en porcentajes, cuanto vario con respecto al modelo de referencia los parámetros mas importantes para esta etapa al modificar cada variable. Los valores de las variables son los mismo utilizados anteriormente, de modo que se tienen los siguientes resultados para la  etapa de cts:</p>
+<table class="docutils align-center" id="id37">
+<caption><span class="caption-text">Comparación de parámetros con el modelo de referencia, etapa de routing</span><a class="headerlink" href="#id37" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Chip Area</p></th>
+<th class="head"><p>Potencia</p></th>
+<th class="head"><p>Peor Setup</p></th>
+<th class="head"><p>Peor Hold</p></th>
+<th class="head"><p>Violaciones Slew</p></th>
+<th class="head"><p>Violaciones Fanout</p></th>
+<th class="head"><p>Violaciones Cap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_TIMING_OPTIMIZATIONS</span></code></p></td>
+<td><p>-0.133</p></td>
+<td><p>0</p></td>
+<td><p>-5.38</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>4</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_DESIGN_OPTIMIZATIONS</span></code></p></td>
+<td><p>-0.703</p></td>
+<td><p>-0.411</p></td>
+<td><p>-2.44</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>21</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_SLEW_MARGIN</span></code></p></td>
+<td><p>-0.142</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-2</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GLB_RESIZER_MAX_CAP_MARGIN</span></code></p></td>
+<td><p>0.002</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GLB_OPTIMIZE_MIRRORING</span></code></p></td>
+<td><p>-0.144</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-8</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GRT_ANT_MARGIN</span></code></p></td>
+<td><p>0.248</p></td>
+<td><p>0.411</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>7</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code></p></td>
+<td><p>-0.583</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-34</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GRT_REPAIR_ANTENNAS</span></code></p></td>
+<td><p>-0.420</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-22</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="scripts-de-insercion-de-diodos-personalizada">
+<h2><a class="toc-backref" href="#id175" role="doc-backlink">Scripts de inserción de diodos personalizada</a><a class="headerlink" href="#scripts-de-insercion-de-diodos-personalizada" title="Link to this heading"></a></h2>
+<section id="id27">
+<h3><a class="toc-backref" href="#id176" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/routing.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="cdis-def">
+<img alt="_images/CDIS_var.png" src="_images/CDIS_var.png" />
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de inserción de diodos personalizada.</span><a class="headerlink" href="#cdis-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id28">
+<h3><a class="toc-backref" href="#id177" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<section id="run-heuristic-diode-insertion">
+<h4><a class="toc-backref" href="#id178" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_HEURISTIC_DIODE_INSERTION</span></code></a><a class="headerlink" href="#run-heuristic-diode-insertion" title="Link to this heading"></a></h4>
+<p>Ejecuta un script de Sylvain Munaut que inserta diodos heurísticamente. 1 = Habilitado, 0 = Deshabilitado
+(Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="heuristic-antenna-threshold">
+<h4><a class="toc-backref" href="#id179" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">HEURISTIC_ANTENNA_THRESHOLD</span></code></a><a class="headerlink" href="#heuristic-antenna-threshold" title="Link to this heading"></a></h4>
+<p>Distancia mínima de una red para insertar un diodo en micrómetros. Solo se aplica para <code class="docutils literal notranslate"><span class="pre">RUN_HEURISTIC_DIODE_INSERTION</span></code>
+está habilitado. (Predeterminado: 90)</p>
+<p>Aumentado esta distancia al doble, ya que con su valor predeterminado el flujo no es completado por problemas de congestionamiento, se obtiene la siguiente información del registro de diodos:</p>
+<figure class="align-center" id="ddiodes-log-heuristic-antenna-threshold-180">
+<img alt="_images/diodes-log_HEURISTIC_ANTENNA_THRESHOLD_180.png" src="_images/diodes-log_HEURISTIC_ANTENNA_THRESHOLD_180.png" />
+<figcaption>
+<p><span class="caption-text">Registro diodos, etapa routing detallado.</span><a class="headerlink" href="#ddiodes-log-heuristic-antenna-threshold-180" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Lo cual se puede observar en el siguiente layout y su reporte de área:</p>
+<figure class="align-center" id="heuristic-antenna-threshold-180">
+<img alt="_images/HEURISTIC_ANTENNA_THRESHOLD_180.png" src="_images/HEURISTIC_ANTENNA_THRESHOLD_180.png" />
+<figcaption>
+<p><span class="caption-text">Layout etapa routing, énfasis instancias antenna.</span><a class="headerlink" href="#heuristic-antenna-threshold-180" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="diode-on-ports">
+<h4><a class="toc-backref" href="#id180" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">DIODE_ON_PORTS</span></code></a><a class="headerlink" href="#diode-on-ports" title="Link to this heading"></a></h4>
+<p>Inserta diodos en los puertos con las polaridades especificadas. Las opciones disponibles son: ninguna, dentro, fuera y ambas (none, in, out y both). (Predeterminado: <cite>none</cite>)</p>
+<p>Utilizando la configuración ambas (both) se obtiene un nuevo de registro de diodos IO con la siguiente información:</p>
+<figure class="align-center" id="io-diodes-log">
+<img alt="_images/io-diodes-log.png" src="_images/io-diodes-log.png" />
+<figcaption>
+<p><span class="caption-text">Registro diodos IO.</span><a class="headerlink" href="#io-diodes-log" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Estos diodos se puede apreciar en el siguiente layout y registro de área:</p>
+<figure class="align-center" id="diode-on-ports-both">
+<img alt="_images/DIODE_ON_PORTS_both.png" src="_images/DIODE_ON_PORTS_both.png" />
+<figcaption>
+<p><span class="caption-text">Registro diodos IO.</span><a class="headerlink" href="#diode-on-ports-both" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Ya que se tienen 311, 35 mas en comparación con los 277 que se tienen en el modelo de referencia.</p>
+</section>
+</section>
+</section>
+<section id="capacitancias-y-resistencias-parasitas">
+<h2><a class="toc-backref" href="#id181" role="doc-backlink">Capacitancias y resistencias parásitas</a><a class="headerlink" href="#capacitancias-y-resistencias-parasitas" title="Link to this heading"></a></h2>
+<section id="id29">
+<h3><a class="toc-backref" href="#id182" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/extraction.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="rcx-def">
+<a class="reference internal image-reference" href="_images/RCX_var.png"><img alt="_images/RCX_var.png" src="_images/RCX_var.png" style="width: 279.2px; height: 93.60000000000001px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de síntesis.</span><a class="headerlink" href="#rcx-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id30">
+<h3><a class="toc-backref" href="#id183" role="doc-backlink">Descripción:</a><a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<section id="run-spef-extraction">
+<h4><a class="toc-backref" href="#id184" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_SPEF_EXTRACTION</span></code></a><a class="headerlink" href="#run-spef-extraction" title="Link to this heading"></a></h4>
+<p>Especifica si se debe ejecutar o no la extracción SPEF en el DEF enrutado. 1 = Habilitado 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="spef-extractor">
+<h4><a class="toc-backref" href="#id185" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SPEF_EXTRACTOR</span></code></a><a class="headerlink" href="#spef-extractor" title="Link to this heading"></a></h4>
+<p>Especifica cual extractor spef usar. Valores: <code class="docutils literal notranslate"><span class="pre">openrcx</span></code> (eliminado: <code class="docutils literal notranslate"><span class="pre">def2spef</span></code>). (Predeterminado: <code class="docutils literal notranslate"><span class="pre">openrcx</span></code>)</p>
+</section>
+<section id="rcx-merge-via-wire-res">
+<h4><a class="toc-backref" href="#id186" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RCX_MERGE_VIA_WIRE_RES</span></code></a><a class="headerlink" href="#rcx-merge-via-wire-res" title="Link to this heading"></a></h4>
+<p>Especifica si se debe fusionar la resistencia de vía con la resistencia del cable o separarla de la resistencia del cable. 1 = Fusionar mediante resistencia, 0 = Separar mediante resistencia. (Predeterminado: <cite>1</cite>)</p>
+</section>
+</section>
+</section>
+<section id="analisis-de-caida-de-ir">
+<h2><a class="toc-backref" href="#id187" role="doc-backlink">Análisis de caída de IR</a><a class="headerlink" href="#analisis-de-caida-de-ir" title="Link to this heading"></a></h2>
+<section id="id31">
+<h3><a class="toc-backref" href="#id188" role="doc-backlink">Descripción:</a><a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<section id="run-irdrop-report">
+<h4><a class="toc-backref" href="#id189" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_IRDROP_REPORT</span></code></a><a class="headerlink" href="#run-irdrop-report" title="Link to this heading"></a></h4>
+<p>Crea un informe de caída de IR utilizando OpenROAD PSM. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="vsrc-loc-files">
+<h4><a class="toc-backref" href="#id190" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">VSRC_LOC_FILES</span></code></a><a class="headerlink" href="#vsrc-loc-files" title="Link to this heading"></a></h4>
+<p>Archivo loc PSM para redes eléctricas y terrestres. La variable debe proporcionarse como una lista json/tcl o una cadena tcl delimitada por espacios de la siguiente manera: <code class="docutils literal notranslate"><span class="pre">net1</span> <span class="pre">archivo1</span> <span class="pre">net2</span> <span class="pre">archivo2</span></code>. Vea <a class="reference external" href="https://github.com/The-OpenROAD-Project/OpenROAD/tree/master/src/psm#commands">esto</a> para más información. (Predeterminado: NINGUNO)</p>
+</section>
+</section>
+</section>
+<section id="signoff">
+<h2><a class="toc-backref" href="#id191" role="doc-backlink">Signoff</a><a class="headerlink" href="#signoff" title="Link to this heading"></a></h2>
+<section id="id32">
+<h3><a class="toc-backref" href="#id192" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/general.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="signoff-def">
+<img alt="_images/signoff_var.png" src="_images/signoff_var.png" />
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de signoff.</span><a class="headerlink" href="#signoff-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id33">
+<h3><a class="toc-backref" href="#id193" role="doc-backlink">Descripción:</a><a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
+<section id="primary-signoff-tool">
+<h4><a class="toc-backref" href="#id194" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">PRIMARY_SIGNOFF_TOOL</span></code></a><a class="headerlink" href="#primary-signoff-tool" title="Link to this heading"></a></h4>
+<p>Determina si <code class="docutils literal notranslate"><span class="pre">magic</span></code> o <code class="docutils literal notranslate"><span class="pre">klayout</span></code> es la herramienta de signoff principal.
+(Predeterminado: <code class="docutils literal notranslate"><span class="pre">magic</span></code>)</p>
+</section>
+<section id="use-arc-antenna-check">
+<h4><a class="toc-backref" href="#id195" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">USE_ARC_ANTENNA_CHECK</span></code></a><a class="headerlink" href="#use-arc-antenna-check" title="Link to this heading"></a></h4>
+<p>Especifica si se debe utilizar el checker de antena Openroad ARC o el checker de antena magic.
+0 = comprobador de antena magic, 1 = checker de antena ARC OR. (Predeterminado: 1)</p>
+</section>
+<section id="run-cvc">
+<h4><a class="toc-backref" href="#id196" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">RUN_CVC</span></code></a><a class="headerlink" href="#run-cvc" title="Link to this heading"></a></h4>
+<p>Ejecuta CVC en la especia de salida, que es un verificador de validez de circuito. Checker ERC consciente
+del voltaje para listas de red CDL. 1 = Habilitado, 0 = Deshabilitado. (Predeterminado: <cite>1</cite>)</p>
+</section>
+<section id="signoff-sdc-file">
+<h4><a class="toc-backref" href="#id197" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SIGNOFF_SDC_FILE</span></code></a><a class="headerlink" href="#signoff-sdc-file" title="Link to this heading"></a></h4>
+<p>Especifica el archivo SDC utilizado por STA multiesquina durante la etapa de signoff, que puede ser diferente del utilizado para la implementación. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">BASE_SDC_FILE</span></code>)</p>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ta.html" class="btn btn-neutral float-left" title="Análisis de temporización estatico (STA)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Universidad de Costa Rica EIE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
