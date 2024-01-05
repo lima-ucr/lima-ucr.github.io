@@ -1,0 +1,838 @@
+<h1>Tutorial #1: Síntesis Lógica</h1>
+<p><i>Elaborado por Erick Carvajal Barboza y Ana Eugenia Sánchez Villalobos</i></p>
+<p><i>Email: erick punto carvajal punto barboza arroba ucr punto ac punto cr </i></p>
+<p><i>Escuela de Ingeniería Eléctrica, Universidad de Costa Rica</i></p>
+
+<p> En este tutorial se utilizarán las herramientas Yosys y OpenLane para
+ilustrar los procedimientos de síntesis lógica.</p>
+
+<h2>FAQs</h2>
+
+<p>Para encontrar una lista actualizada de las preguntas más comunes puede ir
+al siguiente <a href="faqs.html">enlace</a>.
+</p>
+
+
+<h2>Introducción</h2>
+
+<p> Los sistemas digitales pueden ser descritos en varios dominios distintos
+<i>(Kaeslin, 2008)</i>, de más a menos abstracto se tiene: (1) el dominio
+conductual, (2) el dominio estructural y (3) el dominio físico. </p>
+
+<p> En el dominio conductual únicamente es importante la funcionalidad del
+sistema, y no tiene relevancia el cómo está construido. En el dominio
+estructural se especifican las interconexiones de cada bloque que conforma el
+sistema sin embargo, es únicamente en el dominio físico en el cuál se tiene
+información sobre cómo está construido cada componente, que ubicación tiene en
+el chip y cómo se deben realizar las conexiones entre bloques. El flujo de
+diseño de circuitos integrados se encarga de convertir la especificación
+conductual de un sistema digital en una especificación física, y para eso tiene,
+como paso intermedio, que obtener une especificación estructural.
+</p>
+
+<p> El paso que permite la conversión de una especificación conductual de un
+sistema digital a una especificación estructural se conoce como síntesis
+lógica <i>(Weste & Harris, 2015)</i> y será el tema principal de este tutorial.
+ </p>
+
+ <h3>Síntesis lógica</h3>
+
+ <p> En este paso del flujo de diseño se toma una especificación conductual del
+sistema digital, usualmente escrita en un lenguaje de descripción de hardware
+(HDL, por sus siglas en inglés) como Verilog o VHDL, y la convierte en una
+descripción estructural conocida como netlist, donde se enlistan todas las
+compuertas lógicas, elementos secuenciales y puertos de entrada y salida,
+así como todas las conexiones que existen entre los mismos. Este proceso es,
+usualmente, realizado de forma automática por herramientas conocidas como
+sintetizadores, quienes además de realizar la conversión, implementan
+optimizaciones de área, temporización, potencia y otros aspectos relevantes
+para el diseño <i>(Wang et al., 2009)</i>. </p>
+
+<p> Para poder efectuar la síntesis lógica, el sintetizador requiere que se
+especifique el conjunto de compuertas lógicas a las que se tendrán acceso,
+para esto se utilizan librerías de celdas estándar. Estas librerías son
+colecciones de funciones lógicas (INV, NAND, NOR, Flip-Flops, etc) en las
+cuales es especifican las características de cada una (layout, símbolo,
+esquemático, retardo, potencia, tolerancia al ruido, etc). Un aspecto
+fundamental de estas librerías es que todas las celdas tienen la misma altura,
+mientras que su ancho sí varía, esto facilita las labores de posicionamiento
+automático, pues se pueden acomodar siguiendo filas. En este tutorial
+utilizaremos la librería <a href="https://github.com/google/skywater-pdk">SkyWater PDK</a>,
+la cual es open-source y utiliza un proceso de manufactura en 130nm. </p>
+
+<p>Una vez que se ha obtenido la definición estructural del sistema, es común
+realizar múltiples chequeos para verificar la sanidad de los resultados,
+entre esos chequeos se tiene: </p>
+
+<ul>
+  <li><b>Verificación Funcional o Formal:</b> En este chequeo se verifica que el
+    netlist realiza la misma función que la descripción conductual del sistema.
+    Idealmente el netlist debería ser equivalente por construcción, pero algunas
+    ambigüedades en el lenguaje de descripción de hardware podrían causar que el
+    netlist se comporte de una manera incorrecta. Un método para realizar esta
+    verificación es mediante comparaciones de los resultados de ambas
+    implementaciones durante simulaciones. Al otro método se le conoce como
+    <i>verificación formal</i>, en el cual se compara la equivalencia de las
+    dos implementaciones mediante métodos matemáticos, que realizan
+    demostraciones formales de la equivalencia de la lógica.</li>
+  <li><b>Análisis Estático de Temporización:</b> Una vez que la equivalencia
+    entre las implementaciones se ha comprobado, se debe verificar que los
+    requerimientos de temporización del sistema se cumplan. A nivel conductual,
+    el ciclo de reloj es una noción abstracta, mientras que a nivel estructural
+    se debe corroborar que los retardos de las compuertas no produzcan tiempos
+    de propagación superiores al período. Para verificar esto se utilizan
+    herramientas conocidas como analizadores de temporización estática,
+    la cual obtiene la información de retardos de cada compuerta desde la
+    librería de celdas estándar y evalúa todas las trayectorias posibles. </li>
+  <li><b>Análisis de Potencia:</b> El consumo de potencia del sistema puede
+    estimarse mediante cálculos de los factores de actividad de cada compuerta.
+    El consumo de potencia se realiza para un set de pruebas específicas que se
+    simulan. Si el consumo es muy alto durante esta etapa, se debe volver al
+    diseño arquitectural del sistema para encontrar posibles soluciones. </li>
+</ul>
+
+<p>Aunque durante esta etapa se pueden obtener estimaciones de temporización y
+potencia, es importante recalcar que dichos valores no son muy exactos, aún
+hay información relevante que se desconoce, como la distancia de las
+interconexiones, la capa de metal en la que realizarán, efectos de ruido, etc.
+Por estos motivos es indispensable volver a realizar estos chequeos en etapas
+posteriores del diseño.
+</p>
+
+<h3>OpenLane</h3>
+
+<p>En este tutorial, se hará uso de la herramienta libre para diseño de
+circuitos integrados llamada OpenLane. Se sugiere al lector investigar
+sobre el flujo de diseño que sigue OpenLane antes de continuar con el tutorial.
+</p>
+
+<h4>Yosys</h4>
+
+<p>Yosys es una herramienta libre para la síntesis lógica de circuitos
+digitales. OpenLane utiliza Yosys para sintetizar sus diseños. Se sugiere al
+lector investigar sobre Yosys antes de continuar con el tutorial.
+</p>
+
+<h2>Antes de iniciar...</h2>
+
+<p>Antes de iniciar este laboratorio, asegúrese de haber completado
+satisfactoriamente todas las instrucciones de la Guía de Instalación.
+</p>
+
+<p>El laboratorio se basa en ejemplos sencillos, que permitirán ilustrar los
+procedimientos que se ejecutan durante el flujo de síntesis. Las instrucciones
+mostradas a continuación proveen una guía para generar los archivos de los
+ejemplos:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  >$ cd <Directorio OpenLane>/designs/
+  >$ mkdir adder_1b adder_4b adder_8b_pipeline
+ </code>
+</pre>
+
+<p>Los comandos anteriores crearán las carpetas de los tres ejemplos que se
+utilizarán a lo largo del tutorial. Ahora, utilizando los siguientes comandos,
+ingresará al directorio <code>adder_1b</code> y creará el archivo
+<code>adder_1b.v</code>
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  >$ cd adder_1b
+  >$ touch adder_1b.v
+ </code>
+</pre>
+
+<p>Dentro del archivo <code>adder_1b.v</code> escriba lo siguiente: </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+module adder_1b (
+  input A, B, C_in,
+  output Sum, C_out
+) ;
+
+  assign {C_out, Sum} = A + B + C_in;
+
+endmodule
+ </code>
+</pre>
+
+<p>A continuación, utilizando los siguientes comandos, ingrese al directorio
+<code>adder_4b</code> y genere el archivo <code>adder_4b.v</code> </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  >$ cd ../adder_4b
+  >$ touch adder_4b.v
+ </code>
+</pre>
+
+<p>Dentro del archivo <code>adder_4b.v</code> escriba lo siguiente: </p>
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+module adder_4b (
+  input [3:0] A, B,
+  input C_in,
+  output [3:0] Sum,
+  output C_out
+);
+
+  assign {C_out, Sum} = A + B + C_in;
+
+endmodule
+ </code>
+</pre>
+
+<p>Y para finalizar, con los siguientes comandos, ingrese al directorio
+<code>adder_8b_pipeline</code>, copie el archivo <code>adder_4b.v</code> del
+paso anterior y genere el archivo <code>adder_8b_pipeline.v</code> </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  >$ cd ../adder_8b_pipeline
+  >$ cp ../adder_4b/adder_4b.v .
+  >$ touch adder_8b_pipeline.v
+ </code>
+</pre>
+
+<p>Dentro del archivo <code>adder_8b_pipeline.v</code> escriba lo siguiente: </p>
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+module adder_8b_pipeline (
+  input [7:0] A, B,
+  input C_in, clk, rst,
+  output [7:0] Sum,
+  output C_out
+);
+
+  wire C_out_a0, C_out_a1;
+  reg C_out_a0_reg;
+  wire [3:0] Sum_a0, Sum_a1;
+  reg [3:0] A_msbits, B_msbits, Sum_a0_reg;
+
+  adder_4b a40 (
+    A[3:0], B[3:0], C_in,
+    Sum_a0[3:0], C_out_a0
+  ) ;
+
+  adder_4b a41 (
+    A_msbits, B_msbits, C_out_a0_reg,
+    Sum_a1[3:0], C_out_a1
+  ) ;
+
+  assign Sum[3:0] = Sum_a0_reg;
+  assign Sum[7:4] = Sum_a1;
+  assign C_out = C_out_a1;
+
+  always @(posedge clk) begin
+    if (!rst) begin
+      Sum_a0_reg <= 0;
+      C_out_a0_reg <= 0;
+      A_msbits <= 4'b0;
+      B_msbits <= 4'b0;
+    end
+    else begin
+      A_msbits <= A[7:4];
+      B_msbits <= B[7:4];
+      Sum_a0_reg[3:0] <= Sum_a0[3:0];
+      C_out_a0_reg <= C_out_a0;
+    end
+  end
+
+endmodule
+ </code>
+</pre>
+
+<p>Antes de continuar con el tutorial, se sugiera al lector leer y comprender
+cada uno de los diseños de los sumadores que se utilizarán. </p>
+
+<h2>Síntesis Lógica de un Sumador Completo de 1 bit</h2>
+
+<p>En esta sección se introducirá el uso de la herramienta Yosys, la cual se
+encarga de la síntesis lógica en el ambiente de diseño libre OpenLane.
+Esta introducción se realizará mediante el uso de un diseño sencillo,
+un sumador completo de 1 bit.
+</p>
+
+<h3>Síntesis mediante Yosys</h3>
+
+<p>Primero, se debe entrar al docker de OpenLane:</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ cd <Directorio OpenLane>
+    >$ make mount
+ </code>
+</pre>
+
+<p>Si este paso es ejecutado satisfactoriamente la terminal ahora debería
+mostrar una línea como la mostrada a continuación:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    OpenLane Container (XYWZ):/openlane$
+ </code>
+</pre>
+
+<p>La línea anterior indica que se ha entrado al docker de OpenLane, y ahora se
+pueden utilizar todas las herramientas instaladas en el mismo.
+</p>
+
+<p>Una vez en el docker, se entrará a la herramienta Yosys:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$ yosys
+ </code>
+</pre>
+
+<p>En la terminal se desplegará un banner como en mostrado en la siguiente
+figura.</p>
+
+<figure>
+  <img src="figures/yosys_init.png" alt="Terminal con Yosys activo">
+  <figcaption>Fig. 1 - Inicialización de Yosys en el ambiente OpenLane.</figcaption>
+</figure>
+
+<p>El comando más importante de Yosys es <code>help</code>, el cual brinda
+información sobre el uso del resto de comandos. Incluso <code>help</code> tiene
+un <code>help</code>. Intente ejecutar el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> help help
+ </code>
+</pre>
+
+<p>El primer paso para iniciar el proceso de síntesis lógica es indicarle a
+Yosys cuáles archivos leer. Para eso se usa el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> read -sv designs/adder_1b/adder_1b.v
+ </code>
+</pre>
+
+<p>Luego, se le debe indicar a Yosys cuál de los módulos leídos es el que está
+ubicado más alto en la jerarquía (en este caso no únicamente hay un módulo:
+<code>adder_1b</code>, pero en diseños más grandes es de suma importancia
+ser explícitos con esto). Para eso ejecutamos el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> hierarchy -top full_adder
+ </code>
+</pre>
+
+<p>A continuación le indicaremos a Yosys que inicie el proceso de transformación
+desde la descripción conductual, hacia una descripción estructural. Para esto
+ejecute el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> proc
+ </code>
+</pre>
+
+<p>Ante el comando anterior, Yosys imprimirá una serie de pasos que ejecutó
+para llevar a cabo este proceso. Investigue en la documentación de Yosys sobre
+cada uno de los pasos ejecutados y reflexione brevemente sobre la complejidad
+del proceso realizado. </p>
+
+<p>Luego, procedemos a realizar una serie de optimizaciones al proceso, para
+eso ejecute el siguiente comando:
+</p>
+
+ <pre>
+   <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+     yosys> opt
+  </code>
+ </pre>
+
+ <p>Al igual que con el paso anterior, investigue sobre los pasos ejecutados y
+reflexione brevemente sobre la complejidad del proceso realizado.
+ </p>
+
+<p>En otra terminal (donde no haya ingresado al docker de OpenLane) genere
+un directorio para almacenar los resultados de la corrida,
+usando el siguiente comando:
+</p>
+
+ <pre>
+   <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+     $ mkdir <Directorio OpenLane>/designs/adder_1b/results/
+  </code>
+ </pre>
+
+<p>Ahora, escribiremos el netlist generado en un archivo de Verilog,
+guarde mediante el siguiente comando: </p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> write_verilog designs/adder_1b/results/adder_1b_synth.v
+ </code>
+</pre>
+
+<p>Utilizando cualquier editor de texto abra el archivo que acaba de generar.
+Interprete el netlist obtenido. Es importante recalcar que, en este caso,
+no es difícil interpretar los resultados del paso anterior sin embargo,
+en diseños complejos, resulta prácticamente imposible comprender el circuito
+obtenido.
+</p>
+
+<p>La plataforma OpenLane aún no cuenta con una herramienta que permita
+visualizar los netlist de una forma interactiva, por este motivo utilizaremos
+la herramienta libre <code>netlistsvg</code> para generar imágenes de los
+netlists obtenidos con Yosys. Para instalar esta herramienta ejecute los
+siguientes comandos en una terminal nueva:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ sudo apt update
+    >$ sudo apt install nodejs npm
+    >$ npm install -g netlistsvg
+ </code>
+</pre>
+
+<p>La herramienta <code>netlistsvg</code> convierte netlists en formato JSON
+a imágenes en formato SVG. Por lo tanto, generaremos el archivos JSON en Yosys,
+utilizando el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> write_json designs/adder_1b/results/adder_1b_synth.json
+ </code>
+</pre>
+
+<p>En una terminal que no tenga Yosys u OpenLane abierto, se ejecuta el
+siguiente comando para generar la imagen del netlist (es un único comando).
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ netlistsvg designs/adder_1b/results/adder_1b_synth.json -o
+ </code>
+</pre>
+
+<p>Abra el diagrama obtenido (el cual fue guardado en
+<code>designs/adder_1b/results/adder_1b_synth.svg</code>) y observe cómo
+relaciona con el netlist creado por Yosys.
+</p>
+
+<p>Durante el proceso de síntesis lógica, es necesario realizar un mapeo de las
+celdas escogidas por el sintetizador, a las celdas disponibles en la librería
+de celdas estándar que se utilizaran en el diseño. Este proceso se conoce como
+<i>technology mapping</i>. En Yosys, se puede ejecutar ese paso mediante el
+siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+  yosys> techmap
+ </code>
+</pre>
+
+<p>Para general el netlist nuevo en formato Verilog y JSON ejecute:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> write_verilog designs/adder_1b/results/adder_1b_synth_techmap_noopt.v
+    yosys> write_json designs/adder_1b/results/adder_1b_synth_techmap_noopt.json
+ </code>
+</pre>
+
+<p>Genere un diagrama con el nuevo netlist. Relacione el diagrama nuevo con el
+obtenido antes de hacer <i>technology mapping</i>.
+</p>
+
+<p>Resulta claro del diagrama obtenido, que la implementación no es la adecuada,
+por lo que es necesario efectuar los procesos de optimizaciones de Yosys,
+una vez que el <i>technology mapping</i> fue ejecutado. Para esto:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    yosys> opt
+    yosys> write_verilog designs/adder_1b/results/adder_1b_synth_techmap.v
+    yosys> write_json designs/adder_1b/results/adder_1b_synth_techmap.json
+ </code>
+</pre>
+
+<p>Genere un diagrama con el nuevo netlist. Compare los tres netlists generados
+hasta el momento.
+</p>
+
+<h2>Síntesis Lógica de un Sumador de 4 bits</h2>
+
+<p>En esta sección se aplicarán los aprendizajes obtenidos en la sección
+anterior mediante la utilización de la herramienta Yosys para realizar la
+síntesis lógica de un circuito sumador con entradas de cuatro bits.
+Posteriormente, se brindarán instrucciones para ejecutar la síntesis lógica
+utilizando el flujo de OpenLane.
+</p>
+
+
+<p>Siguiendo los pasos brindados en la sección anterior, realice la síntesis
+lógica del sumador de 4 bits.
+</p>
+
+<p>Compare los archivos Verilog y SVG producidos tras sintetizar el sumador de
+4 bits. Considere tanto los resultados de realizar síntesis SIN <i>technology
+mapping</i>, como los resultados OPTIMIZADOS de síntesis CON <i>technology
+mapping</i>. ¿Cuál es más útil?
+</p>
+
+<h3>Síntesis con el flujo de OpenLane</h3>
+
+<p>El proceso de síntesis lógica también puede ser ejecutado siguiendo el
+flujo de diseño de OpenLane. Para esto, el docker de OpenLane incluye un
+archivo con un flujo sugerido, el cual se puede encontrar en
+<code><Directorio OpenLane>/flow.tcl</code>. Utilizando cualquier editor de texto,
+abra el archivo <code>flow.tcl</code>, Analice e intente comprender el archivo.
+</p>
+
+<p>Para agregar un diseño nuevo, y que OpenLane genere la estructura de
+directorios y otros archivos de configuración necesarios se debe ejecutar,
+en una terminal con el docker de OpenLane activo, el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$ ./flow.tcl -design adder_4b -init_design_config -add_to_designs
+ </code>
+</pre>
+
+<p>Si usted observa un mensaje que inicia con <code>[SUCCESS]</code>, significa
+que la estructura de directorios fue creada satisfactoriamente. Diríjase al
+directorio <code>designs/adder_4b</code>, ahí deberá encontrar un archivo
+<code>config.json</code>, abra el archivo en cualquier editor de texto.
+Dicho archivo contiene variables que le indican a OpenLane información
+fundamental durante la ejecución. Para más detalles sobre dichas variables
+haga clic en <a href="https://github.com/The-OpenROAD-Project/OpenLane/blob/master/designs/README.md">este enlace</a>.
+</p>
+
+<p>Se recomienda mover los archivos Verilog del diseño a un directorio
+<code>src</code> dentro de la carpeta del diseño, para eso ejecute los
+siguientes comando en una terminal nueva:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    >$ cd <Directorio OpenLane>/designs/adder_4b/
+    >$ mkdir src/
+    >$ mv *.v src/
+ </code>
+</pre>
+
+<p>Si no  realiza el paso anterior, asegúrese de modificar la variable
+<code>VERILOG_FILES</code> del archivo <code>config.json</code> para que apunte
+a la dirección correcta.
+</p>
+
+<p>Ahora, procederemos a ejecutar el flujo OpenLane. El archivo
+<code>flow.tcl</code> describe el flujo completo, por lo que al ejecutarlo sin mayor
+detalle, OpenLane procederá a correr la totalidad del flujo (hasta generar un
+layout) del circuito. Dado que en esta laboratorio nos enfocamos únicamente en
+síntesis lógica, procederemos a correr OpenLane en modo interactivo, para ir
+ejecutando el flujo paso a paso. Para eso, ejecute el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$ ./flow.tcl -design adder_4b -interactive -tag only_synth
+ </code>
+</pre>
+
+<p>La bandera <code>-tag</code> permite ponerle un nombre específico a la
+corrida que estamos generando. Revise el directorio <code>designs/adder_4b/runs</code>.
+El comando anterior desplegará varios mensajes de información, asegúrese de
+que todo luzca correcto. Para correr el proceso de síntesis lógica, en la misma
+terminal, ejecute el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    % run_synthesis
+ </code>
+</pre>
+
+<p>Una vez que el comando haya finalizado, diríjase al directorio generado para
+esta corrida, es decir, <code>designs/adder_4b/runs/only_synth</code>. Además
+del directorio <code>src</code> generado anteriormente, encontrará el directorio
+<code>runs</code>, dentro del mismo se irán guardando las salidas de OpenLane
+cada vez que se ejecute el flujo para este diseño. Note que el tag otorgado
+durante el comando para ejecutar el flujo, <code>only_synth</code> indica el
+nombre de la carpeta donde se almacenarán los resultados.
+</p>
+
+<p>Ingrese a <code>runs/only_synth/results/</code>, observe que dentro de esta
+carpeta existen varios directorios, cada uno almacena los resultados de
+distintos pasos del flujo. En este caso, únicamente revisaremos los
+resultados en <code>synthesis</code>, en ese directorio encontrará el netlist
+generado por OpenLane, puede abrirlo utilizando cualquier editor de texto.
+Revise el netlist generado y contrástelo con el netlist generado utilizando
+Yosys, ¿En qué se diferencian? ¿En qué se asemejan?. Investigue sobre SkyWater
+Open Source PDK
+</p>
+
+<h2>Síntesis Lógica de un Sumador de 8 bits con pipeline</h2>
+
+<p>En esta sección se utilizará OpenLane para realizar la síntesis lógica de un
+circuito un poco más complejo que los anteriores, y que además cuenta con
+elementos secuenciales, un sumador de 8 bits con pipeline.
+</p>
+
+<h3>Síntesis lógica</h3>
+
+<p>Proceda a agregar el diseño del <code>adder_8b_pipeline</code> y generar la
+estructura de directorios usando el archivo <code>flow.tcl</code>, tal y como
+se instruyó para el sumador de 4 bits.</p>
+
+<p>En una terminal nueva, diríjase a la carpeta <code>designs/adder_8b_pipeline</code>
+y realice lo siguiente:
+</p>
+
+<ol>
+  <li>Genere el directorio <code>src</code> y copie los archivos Verilog del
+    diseño dentro de la misma.</li>
+  <li>Verifique que la variable <code>CLOCK_PORT</code> del archivo
+     <code>config.json</code>  coincida con la señal <code>clk</code> del
+     Verilog.</li>
+  <li>Modifique la variable <code>CLOCK_PERIOD</code> del archivo
+    <code>config.json</code> para que sea 2.0 , esta variable indica el
+    período, en ns, de la red de reloj.</li>
+</ol>
+
+<p>Ahora, vuelva a la terminal donde estaba corriendo OpenLane, abra de nuevo
+el diseño <code>adder_8b_pipeline</code> utilizando el archivo <code>flow.tcl</code>
+con los flags <code>-interactive</code> y <code>-tag <NOMBRE DEL TAG></code>,
+tal y como se hizo en el sumador de 4 bits y ejecute el comando <code>run_synthesis</code>.
+</p>
+
+<p>Diríjase al directorio <code>designs/adder_8b_pipeline/runs/<NOMBRE DEL TAG></code>.
+Ahí encontrará la misma estructura de directorios que se describió en el sumador de
+4 bits. En el directorio <code>results/synthesis/</code> encontrará el netlist
+generado por la síntesis. Revise el archivo generado e intente identificar
+todas las compuertas lógicas que pueda.
+</p>
+
+<p>En el directorio <code>reports/synthesis/</code> encontrará varios reportes
+con información sobre la síntesis, en particular, nos interesa
+<code>1-synthesis.AREA\_0.stat.rpt</code>. Abra el archivo y analice los resultados
+obtenidos.
+</p>
+
+<p>En el directorio <code>logs/synthesis/</code> encontrará las bitácoras de
+ejecución de los pasos ejecutados, en este caso, únicamente ejecutamos síntesis
+y un análisis de temporización estática (el cual se ejecuta por defecto luego
+de la síntesis). En el archivo <code>1-synthesis.log</code> encontrará la
+información de cada uno de los pasos ejecutados durante el proceso de síntesis.
+</p>
+
+<p>El archivo <code>2-sta.log</code> muestra los resultados del análisis de
+temporización estática, tanto para temporización mínima como máxima, así como un
+reporte de potencia. En el archivo se muestran los reportes de los peores
+caminos de temporización. A continuación se muestra un ejemplo.
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    Startpoint: B[0] (input port clocked by clk)
+    Endpoint: _125_ (rising edge-triggered flip-flop clocked by clk)
+    Path Group: clk
+    Path Type: max
+
+    Fanout     Cap    Slew   Delay    Time   Description
+    -----------------------------------------------------------------------------
+                      0.15    0.00    0.00   clock clk (rise edge)
+                              0.00    0.00   clock network delay (ideal)
+                              0.30    0.30 v input external delay
+                      0.02    0.01    0.31 v B[0] (in)
+         2    0.01                           B[0] (net)
+                      0.02    0.00    0.31 v _082_/A (sky130_fd_sc_hd__or2_2)
+                      0.08    0.33    0.64 v _082_/X (sky130_fd_sc_hd__or2_2)
+         3    0.01                           _038_ (net)
+                      0.08    0.01    0.65 v _084_/A2 (sky130_fd_sc_hd__a21boi_2)
+                      0.21    0.24    0.89 ^ _084_/Y (sky130_fd_sc_hd__a21boi_2)
+         4    0.02                           _040_ (net)
+                      0.21    0.00    0.89 ^ _089_/A1 (sky130_fd_sc_hd__o211a_2)
+                      0.07    0.24    1.13 ^ _089_/X (sky130_fd_sc_hd__o211a_2)
+         3    0.01                           _045_ (net)
+                      0.07    0.01    1.14 ^ _090_/B (sky130_fd_sc_hd__nor2_2)
+                      0.04    0.03    1.18 v _090_/Y (sky130_fd_sc_hd__nor2_2)
+         1    0.00                           _046_ (net)
+                      0.04    0.00    1.18 v _093_/A2 (sky130_fd_sc_hd__o211a_2)
+                      0.04    0.23    1.41 v _093_/X (sky130_fd_sc_hd__o211a_2)
+         1    0.00                           _000_ (net)
+                      0.04    0.00    1.42 v _125_/D (sky130_fd_sc_hd__dfxtp_2)
+                                      1.42   data arrival time
+
+                      0.15    1.50    1.50   clock clk (rise edge)
+                              0.00    1.50   clock network delay (ideal)
+                             -0.25    1.25   clock uncertainty
+                              0.00    1.25   clock reconvergence pessimism
+                                      1.25 ^ _125_/CLK (sky130_fd_sc_hd__dfxtp_2)
+                             -0.09    1.16   library setup time
+                                      1.16   data required time
+    -----------------------------------------------------------------------------
+                                      1.16   data required time
+                                     -1.42   data arrival time
+    -----------------------------------------------------------------------------
+                                     -0.25   slack (VIOLATED)
+ </code>
+</pre>
+
+<p>Del encabezado del reporte es importante recalcar:
+</p>
+
+<ul>
+  <li>El <code>Startpoint</code> se refiere al punto donde inicia la
+     trayectoria, en el caso del ejemplo se trata del puerto
+      <code>B[0]</code>.</li>
+  <li>El <code>Endpoint</code> se refiere al punto donde finaliza la trayactoria,
+     en este caso se trata del Flip-Flop llamado <code>_125_</code></li>
+  <li>Las trayectorias son agrupadas dependiendo del reloj que las maneja, en el
+     caso del ejemplo, el <code>Path Group</code> corresponde al único reloj del
+    diseño, <code>clk</code>.</li>
+    <li>El <code>Path Type</code> indica el tipo de análisis realizado,
+      <code>max</code> o <code>min</code>.</li>
+</ul>
+
+<p>Posteriormente, inicia una tabla que muestra la trayectoria, cada fila de la
+misma indica un elemento (compuerta o interconexión). Dicha tabla se puede
+separar en dos grandes secciones, en la primera se calcula el tiempo de llegada
+(<code>data arrival time</code>} o <code>AT</code>}) de la señal, y en la
+segunda se calcula el tiempo de llegada de requerido (<code>data required time</code>
+o <code>RAT</code>). Para la sección de cálculo del tiempo de llegada:
+</p>
+
+<ul>
+  <li>La columna <code>Fanout</code> indica la cantidad de compuertas
+     (<code>sinks</code>) conectadas a la salida de otra compuerta o puerto de
+      entrada del circuito (<code>source</code> o <code>driver</code>). </li>
+  <li>La columna <code>Cap</code> indica retardos de interconexiones, ocasionados
+     por las capacitancias parasíticas del mismo.</li>
+  <li>La columna <code>Slew</code> indica el tiempo de transición de la señal
+     (del 20% al 80% de VDD) al llegar a la entrada de alguna compuerta.</li>
+  <li>La columna <code>Delay</code> indica el retardo agregado por cada compuerta
+     o el tiempo de llegada de la señal al puerto de entrada del circuito
+     (mostrado como <code>input external delay</code>).</li>
+  <li>La columna <code>Time</code> lleva la cuenta del tiempo total transcurrido
+     hasta cada etapa. </li>
+  <li>La columna <code>Description</code> muestra la ubicación el trayectoria,
+    ya sea un puerto de entrada (<i>e.g.</i> <code>B[0] (in)</code>),
+    un cable de interconexión (<i>e.g.</i> <code>B[0] (net),
+    _038_ (net)</code>), el puerto de entrada de una compuerta (<i>e.g.</i>
+    <code>_082_/A</code>), o el puerto de salida de la compuerta
+    <i>e.g.</i> <code>_082_/X</code>). Junto a cada puerto se muestran el
+    tipo de transición que lleva la señal, ya sea ascendente (<code>^</code>)
+    o decreciente (<code>v</code>).
+</li>
+</ul>
+
+<p>En la sección del cálculo de tiempo requerido:
+</p>
+
+<ul>
+  <li>Se inicia con el período total del reloj en la primera línea, en este
+     caso corresponde a 1.50ns.</li>
+  <li>El <code>clock network delay</code> muestra el retardo de propagación del
+    reloj desde su fuente, hasta el pin de CLK del Flip-Flop destino, en este
+    caso, al no existir información física aún, se asume una red ideal, con 0ns
+    de retardo.</li>
+  <li>La <code>clock uncertainty</code> muestra la incertidumbre del reloj,
+     usualmente debido al efecto conocido como <code>jitter</code>.</li>
+  <li>El <code>clock reconvergence pessimism</code> muestra pesimismo
+    introducido al análisis al propagar las señales de reloj.</li>
+  <li>El <code>library setup time</code> muestra el tiempo de setup del Flip-Flop
+     destino, obtenido de la librería de celdas estándar.</li>
+</ul>
+
+<p>Note que en la parte de cálculo de tiempo de llegada, los retardos se van
+sumando, para identificar el momento en el que la señal llega a su destino,
+mientras que en el cálculo de tiempo requerido los retardos se restan,
+pues se toman en cuenta efectos que disminuyen el período efectivo del reloj.
+</p>
+
+<p>Finalmente, el <code>slack</code> es calculado mediante la diferencia entre el
+tiempo requerido y el tiempo de llegada. Si el slack es negativo, la
+trayectoria presenta una violación de temporización.
+</p>
+
+<p>Identifique la trayectoria con una violación más grande (slack más negativo)
+del diseño sintetizado y realice un análisis del mismo.
+</p>
+
+<p>Además del análisis de temporización, en el archivo <code>2-sta.log</code>
+se muestra un reporte de potencia, realice un breve análisis del mismo. Además
+¿por qué considera que la diferencia entre potencia dinámica y potencia
+estática es tan grande?</p>
+
+<p>Modifique ahora el archivo <code>config.json</code> para que el período del
+reloj sea 11.0. Corra de nuevo los pasos para ejecutar la síntesis
+(utilice un tag diferente para no sobrescribir la corrida anterior). Con los
+datos de esta corrida:
+</p>
+
+
+<ul>
+  <li>Compare de la trayectoria con peor slack de ambos diseños, si no
+    corresponden a la misma trayectoria (mismo startpoint y endpoint),
+    intente buscar una trayectoria que aparezca en ambos reportes.
+    Contraste ambos reportes de temporización ¿Qué diferencias existen entre
+    las mismas trayectorias de los dos diseños? </li>
+  <li>Compare la cantidad de compuertas utilizadas y sus tipos.</li>
+  <li>Compare el consumo de potencia.</li>
+</ul>
+
+<h3>Exploración del espacio de diseño de un controlador USB</h3>
+
+<p>Como se pudo observar en la sección anterior, existe un balance entre las
+ganancias de retardo y área. Diseños que corren más rápido usualmente consumen
+más área, y viceversa. En esta sección utilizaremos uno de los ejemplos
+incluidos en OpenLane, el controlador USB para explorar este balance.
+</p>
+
+<p>La herramienta OpenLane permite la exploración del espacio de diseño de
+forma automática. Para ello, en una terminal nueva, habiendo abierto OpenLane,
+ejecute el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$./flow.tcl -design usb -tag explore -synth_explore
+ </code>
+</pre>
+
+<p>Este comando ejecutará la síntesis lógica para distintas optimizaciones.
+El reporte de este comando se puede observar en el archivo
+<code>0-exploration_analysis.html</code>, en el directorio de reportes de
+síntesis de la corrida <code>explore</code>. Discuta, ¿Cuál diseño usaría si
+usted estuviera a cargo de un proyecto encargado de implementar un chip con
+dicho controlador? ¿Por qué? Compare las compuertas utilizadas en las distintas
+variaciones del diseño (revise los archivos del directorio de reportes para
+recabar esta información).
+</p>
+
+<h2>Referencias</h2>
+<ul>
+  <li>Kaeslin, H. (2008). Digital integrated circuit design: from VLSI
+     architectures to CMOS fabrication. Cambridge University Press. </li>
+  <li>Weste, N. H., & Harris, D. (2015). CMOS VLSI design: a circuits and
+    systems perspective. Pearson Education.</li>
+  <li>Wang, L. T., Chang, Y. W., & Cheng, K. T. (2009).
+     Electronic design automation: synthesis, verification, and test.
+     Morgan Kaufmann.</li>
+</ul>

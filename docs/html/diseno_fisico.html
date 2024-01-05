@@ -1,0 +1,382 @@
+<h1>Tutorial #2: Diseño Físico</h1>
+<p><i>Elaborado por Erick Carvajal Barboza</i></p>
+<p><i>Email: erick punto carvajal punto barboza arroba ucr punto ac punto cr </i></p>
+<p><i>Escuela de Ingeniería Eléctrica, Universidad de Costa Rica</i></p>
+
+<h2>FAQs</h2>
+
+<p>Para encontrar una lista actualizada de las preguntas más comunes puede ir
+al siguiente <a href="faqs.html">enlace</a>.
+</p>
+
+<h2>Introducción</h2>
+
+<p> Los sistemas digitales pueden ser descritos en varios dominios distintos
+<i>(Kaeslin, 2008)</i>, de más a menos abstracto se tiene: (1) el dominio
+conductual, (2) el dominio estructural y (3) el dominio físico. </p>
+
+<p> En el dominio conductual únicamente es importante la funcionalidad del
+sistema, y no tiene relevancia el cómo está construido. En el dominio
+estructural se especifican las interconexiones de cada bloque que conforma el
+sistema sin embargo, es únicamente en el dominio físico en el cuál se tiene
+información sobre cómo está construido cada componente, que ubicación tiene en
+el chip y cómo se deben realizar las conexiones entre bloques. El flujo de
+diseño de circuitos integrados se encarga de convertir la especificación
+conductual de un sistema digital en una especificación física, y para eso tiene,
+como paso intermedio, que obtener une especificación estructural.
+</p>
+
+<p> El paso que permite la conversión de una especificación conductual de un
+sistema digital a una especificación estructural se conoce como síntesis
+lógica <i>(Weste & Harris, 2015)</i> y fue estudiado ampliamente en el
+tutorial anterior. El presente tutorial se enfoca en el paso que se encarga
+de convertir la especificación estructural a una especificación física, el cual
+se conoce como diseño físico <i>(Weste & Harris, 2015)</i>.
+ </p>
+
+ <h2>Antes de iniciar...</h2>
+
+<p> Asegúrese de haber completado todos los experimentos del primer tutorial,
+en particular el sumador de 4 bits, y el sumador de 8 bits con pipeline. Es
+indispensable que ya haya agregado ambos diseños al flujo de OpenLane
+(mediante el la ejecución del archivo <code>flow.tcl</code> con las banderas
+<code>-init_design_config</code> y <code>-add_to_designs</code>, lo cual fue
+realizado en el tutorial anterior).
+</p>
+
+<h2>Diseño Físico de un Sumador de 4 bits</h2>
+
+<p> En esta sección se ejecutará el flujo de diseño de OpenLane para el sumador
+de 4 bits utilizado en el tutorial anterior.
+</p>
+
+<h3>Corrida Inicial</h3>
+
+<p> Para este paso, utilice como <code><ETIQUETA></code> el nombre
+<code>inicial</code> </p>
+
+<p> Para ejecutar el flujo de OpenLane, abra el Docker de OpenLane y ejecute
+el siguiente comando:
+</p>
+
+ <pre>
+   <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+   :/openlane$ ./flow.tcl -design adder_4b -tag <ETIQUETA>
+  </code>
+ </pre>
+
+<p> Durante la ejecución de este comando el flujo fallará. Revise todos los
+<code>WARNING</code> y <code>ERROR</code> mostrados por OpenLane. ¿Cuál es el
+problema que impide que la ejecución del flujo se complete satisfactoriamente?
+</p>
+
+<p> Usando la herramienta <code>Magic</code> se puede observar el resultado
+intermedio que se tenía hasta el momento en el que falló la corrida. Para esto,
+utilice el comando mostrado a continuación :
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$ magic -T <wbr>pdks/sky130A/libs.tech/magic/sky130A.tech <wbr>lef read <wbr>designs/adder_4b/runs/<ETIQUETA>/tmp/merged.nom.lef <wbr>def read <wbr>designs/adder_4b/runs/<ETIQUETA>/results/<ETAPA>/adder_4b.def
+ </code>
+</pre>
+
+<p> Deberá sustituir <code><ETAPA></code> por el nombre de la etapa del flujo
+de la cual desea abrir el layout. Revise los errores que obtuvo al ejecutar el
+flujo para determinar el paso que debe abrir. Analice las características
+principales de dicho layout. ¿Por qué están todas las celdas de lógica
+amontonadas en una esquina?
+</p>
+
+<h3>Configurar archivo config.json</h3>
+
+<p> Para solucionar el problema del apartado anterior, se deberá modificiar el
+archivo de configuración <code>config.json</code> que se encuentra en la
+carpeta <code>designs/adder_4b/</code>. Ingrese las siguientes configuraciones
+en su archivo.
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    {
+        "DESIGN_NAME": "adder_4b",
+        "VERILOG_FILES": "dir::src/*.v",
+        "CLOCK_PORT": null,
+        "CLOCK_PERIOD": 10.0,
+        "DESIGN_IS_CORE": true,
+        "FP_PDN_AUTO_ADJUST": false,
+        "FP_PDN_VPITCH": 20,
+        "FP_PDN_HPITCH": 20,
+        "FP_PDN_VOFFSET": 0,
+        "FP_PDN_HOFFSET": 0,
+        "FP_SIZING": "absolute",
+        "DIE_AREA": "0 0 35 60"
+    }
+ </code>
+</pre>
+
+<p> Investigue en la documentación de OpenLane sobre el significado de
+cada una de las opciones que se están configurando.
+</p>
+
+<p> Ahora, utilizando como <code><ETIQUETA></code> el nombre
+<code>area_pdn_config</code>, vuelva a intentar ejecutar el flujo de diseño
+de OpenLane, utilizando el comando brindado en la sección anterior. En esta
+ocasión, el flujo debería completarse satisfactoriamente.
+</p>
+
+<p> Note que durante la ejecución del flujo, se ejecutan una serie de pasos,
+los cuales aparecen enumerados en la terminal. Investigue sobre los siguientes
+pasos del flujo de diseño de circuitos integrados:
+</p>
+
+<ul>
+  <li>Floorplanning</li>
+  <li>PDN</li>
+  <li>Global Placement</li>
+  <li>Detailed Placement</li>
+  <li>Clock Tree Synthesis</li>
+  <li>Global Routing</li>
+  <li>Detailed Routing</li>
+  <li>SPEF Extraction</li>
+  <li>IR Drop Report</li>
+  <li>Antenna Rule</li>
+</ul>
+
+<p> Utilizando la herramienta <code>Magic</code>, abra el layout final obtenido por
+OpenLane. La dirección del archivo <code>lef</code> se mantiene idéntica a la
+utilizada anteriormente, mientras que el <code>def</code> será:
+<code>designs/adder_4b/runs/<ETIQUETA>/results/final/def/adder_4b.def</code>.
+Analice el layout obtenido.
+</p>
+
+<h3>Exploración de configuraciones</h3>
+
+<ol>
+  <li>Modifique de nuevo el archivo <code>config.json</code>, pero en esta
+    ocasión cambie el <code>FP_PDN_HPITCH</code> a 10. Abra el nuevo layout
+    y compárelo con el layout obtenido cuando <code>FP_PDN_HPITCH</code> era 20.
+    Explique ¿Cómo afectó este cambio el resultado final del layout?
+</li>
+  <li>Manteniendo <code>FP_PDN_HPITCH</code> en 10, modifique la variable de
+     configuración <code>DIE_AREA</code> para que, manteniendo un lado de 60
+     y otro de 35, el circuito ahora sea más alto que ancho.
+     Abra el layout, y compárelo con los layouts obtenidos anteriormente.
+     Explique ¿Cómo afectó este cambio el resultado final del layout?
+</li>
+</ol>
+
+<h2>Síntesis Física de un Sumador de 8 bits con pipeline</h2>
+
+<p> En esta sección se ejecutará el flujo de diseño de OpenLane para el
+sumador de 8 bits con pipeline utilizado en el tutorial anterior.
+</p>
+
+<h3>Corrida Inicial</h3>
+
+<p> Para este paso, utilice como <code><ETIQUETA></code> el nombre
+<code>inicial</code>.
+</p>
+
+<p> Utilice la siguiente configuración en su archivo <code>config.json</code>:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    {
+      "DESIGN_NAME": "adder_8b_pipeline",
+      "VERILOG_FILES": "dir::src/*.v",
+      "CLOCK_PORT": "clk",
+      "CLOCK_PERIOD": 10.0,
+      "DESIGN_IS_CORE": true,
+      "FP_SIZING": "absolute",
+      "DIE_AREA": "0 0 30 50",
+      "FP_PDN_AUTO_ADJUST": false,
+      "FP_PDN_VPITCH": 20,
+      "FP_PDN_HPITCH": 20,
+      "FP_PDN_VOFFSET": 0,
+      "FP_PDN_HOFFSET": 0
+    }
+ </code>
+</pre>
+
+<p> Para ejecutar el flujo de OpenLane, abra el Docker de OpenLane y ejecute
+el siguiente comando:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+    :/openlane$ ./flow.tcl -design adder_8b_pipeline -tag <ETIQUETA>
+  </code>
+</pre>
+
+<p>Durante la ejecución de este comando el flujo fallará. Revise todos los
+<code>WARNING</code> y <code>ERROR</code> mostrados por OpenLane.
+¿Cuál es el problema que impide que la ejecución del flujo se complete
+satisfactoriamente?
+</p>
+
+<p>Utilizando el parámetro de configuración <code>DIE_AREA</code> cambie el
+ANCHO del chip. Encuentre una dimensión que permita que el flujo se ejecute
+correctamente, manteniendo el área lo más pequeña posible.
+Abra el layout.
+</p>
+
+<h3>Análisis de temporización</h3>
+
+<p>Utilizando la corrida anterior, determine si existe algún <i>path</i>
+que produzca una violación de <i>timing</i>. Para esto, revise los
+<code>logs</code> y <code>reports</code> de la etapa <code>signoff</code> del flujo.
+Analice el reporte de temporización de las trayectorias críticas (las que
+tengan el <i>slack</i> más pequeño) para el análisis de
+<i>setup</i> y de <i>hold</i>.
+</p>
+
+<p>Ahora, modifique el archivo \texttt{config.json} para que el período del
+reloj sea 4.0 y vuelva a correr el flujo de diseño.
+</p>
+
+<p>Revise los resultados de temporización para el diseño con la nueva
+frecuencia de reloj, tanto los de <i>Single-Corner STA</i> como los
+de <i>Multi-Corner STA</i>. ¿Se cumplen los requerimientos de temporización
+(tanto para análisis máximo como mínimo) en este caso? ¿Es el peor <i>path</i>
+el mismo (inicio y final) en ambos períodos de reloj? ¿Sufrió cambios la
+lógica del <i>path</i> ante el cambio en la frecuencia?</p>
+
+<h3>Posición de puertos</h3>
+
+<p>Abra en <code>Magic</code> el layout generado para el sumador de 8 bits con
+pipeline en la sección anterior. Observe el orden y la posición en la que
+fueron ubicados los puertos de entradas y salidas al diseño
+(<code>A[0-7], B[0-7], C\_in, Sum[0-7], C\_out, clk y rst</code>). Dibuje
+un diagrama donde indique la posición de los puertos en el diseño.
+¿Considera usted que el ordenamiento actual es el ideal? ¿Por qué?
+Agregue un diagrama con un ordenamiento que usted considere podría
+mejorar los resultados.
+</p>
+
+<p>Abra en <code>Magic</code> el layout generado para el sumador de 8 bits con
+pipeline en la sección anterior. Observe el orden y la posición en la que
+fueron ubicados los puertos de entradas y salidas al diseño
+(<code>A[0-7], B[0-7], C\_in, Sum[0-7], C\_out, clk y rst</code>). Dibuje
+un diagrama donde indique la posición de los puertos en el diseño.
+¿Considera usted que el ordenamiento actual es el ideal? ¿Por qué?
+Realice un diagrama con un ordenamiento que usted considere podría
+mejorar los resultados.
+</p>
+
+<p>Ahora, se procederá a implementar el ordenamiento que usted propuso en
+el diseño. Para esto debe crear un archivo llamado <code>pin_order.cfg</code>
+en el directorio del diseño (<code>designs/adder_8b_pipeline/</code>)
+e indicarle a OpenLane que el archivo nuevo es el que debe utilizarse.
+Para eso declare la variable <code>FP_PIN_ORDER_CFG</code> en el archivo
+<code>config.json</code> y use <code>"dir::pin\_order.cfg"</code> como valor.
+</p>
+
+<p>El archivo <code>pin_order.cfg</code> define el ordenamiento que se utilizará
+para colocar los puertos en cada lado del chip. Para esto se indicara uno
+de los costados <code>#N, #W, #S, #E</code> (North, West, South, East),
+seguido de los puertos que desean colocar. Los puertos se colocarán según el
+orden dado y de izquierda a derecha (para <code>#N</code> y <code>#S</code>)
+o de abajo hacia arriba (para <code>#W</code> y <code>#E</code>).
+</p>
+
+<p>Por ejemplo, considere el ordenamiento mostrado para el layout
+de la siguiente figura.
+</p>
+
+<figure>
+  <img src="figures/pin_order.png" alt="Ordenamiento de Puertos" style="width:389px;height:259px;">
+  <figcaption>Fig. 1 - Ejemplo de ordenamiento de Puertos.</figcaption>
+</figure>
+
+<p>Para lograr dicho acomodo, se deberá utilizar un archivo
+<code>pin_order.cfg</code> como el siguiente:
+</p>
+
+<pre>
+  <code style="background-color: #eee; border: 1px solid #999; display: block; padding: 5px;">
+#N
+A\[0\]
+A\[1\]
+A\[2\]
+
+#S
+B\[0\]
+
+#E
+Y
+
+#W
+B\[1\]
+C
+  </code>
+</pre>
+
+<p>Note que los paréntesis cuadrados son interpretados como caracteres
+especiales, por lo que se debe usar \ para poder usarlos como
+parte de los nombres de las señales.
+</p>
+
+<p>Escriba el <code>pin_order.cfg</code> para implementar el ordenamiento que
+usted sugirió y corra de nuevo el flujo de OpenLane. Utilice una etiqueta
+distinta, para evitar que los resultados de esta corrida sobrescriban los
+de el ordenamiento anterior. Abra el layout para verificar que el ordenamiento
+deseado fue implementado. Haga zoom para que sea posible visualizar los
+nombres de los puertos.
+</p>
+
+<p>Realice además una comparación de los resultados de temporización de ambas
+implementaciones. Revise tanto los reportes de \textit{Total Negative Slack}
+(TNS) como \textit{Worst Negative Slack} (WNS). ¿Fueron efectivos sus cambios
+para mejorar el rendimiento?
+</p>
+
+<h2>Síntesis Física de un controlador USB</h2>
+
+<p>Revise el reporte de exploración del espacio de diseño de síntesis del
+controlador USB realizado en el tutorial anterior. Determine las configuraciones
+de síntesis que brindaron la mejor área y el mejor retardo. Por ejemplo,
+en la figura la configuración <code>AREA 0</code> brinda
+la mejor área, mientras la configuración <code>AREA 3</code> da el mejor retardo.
+</p>
+
+<figure>
+  <img src="figures/synth_explore.png" alt="Exploración del espacio de diseño">
+  <figcaption>Fig. 2 - Resultados de Exploración del Espacio de Diseño.</figcaption>
+</figure>
+
+<p>Ejecute el flujo de diseño de OpenLane para cada una de las dos
+configuraciones de síntesis (mejor área y mejor retardo), para esto, modifique
+la variable <code>SYNTH_STRATEGY</code> en el archivo <code>config.json</code> del
+diseño <code>usb</code>. Modifique también la variable <code>FP_CORE_UTIL</code>
+y asígnele un valor de 30.
+</p>
+
+<p>Modifique también el archivo para que el período del reloj sea 4.0 en la
+configuración de menor retardo y 8.0 para la de menor área. Corra de nuevo
+los pasos para ejecutar OpenLane (utilice un tag diferente para no sobrescribir
+la corrida anterior). Utilice etiquetas distintas para cada configuración,
+para no sobrescribir los datos. Incluya un análisis completo que compare
+ambos resultados. En específico analice:
+</p>
+
+<ul>
+  <li>Análisis de <i>TNS</i> para max y min para <i>Single-Corner STA</i>,
+     así como <i>Multi-Corner STA</i>.</li>
+  <li>Análisis de <i>WNS</i> para max y min para <i>Single-Corner STA</i>,
+     así como <i>Multi-Corner STA</i>.</li>
+  <li>Análisis de las trayectorias críticas para max y min para
+  <i>Single-Corner STA</i>, así como <i>Multi-Corner STA</i>.</li>
+  <li>Análisis de área ocupada, así como cantidad de celdas.</li>
+  <li>Análisis de potencia consumida.</li>
+  <li>Incluya una captura de pantalla de los layouts de cada estrategia.</li>
+</ul>
+
+<h2>Referencias</h2>
+<ul>
+  <li>Kaeslin, H. (2008). Digital integrated circuit design: from VLSI
+     architectures to CMOS fabrication. Cambridge University Press. </li>
+  <li>Weste, N. H., & Harris, D. (2015). CMOS VLSI design: a circuits and
+    systems perspective. Pearson Education.</li>
+</ul>
