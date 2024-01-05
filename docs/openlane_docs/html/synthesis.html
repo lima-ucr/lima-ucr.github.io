@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Síntesis lógica &mdash; Documentacion OpenLane</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Análisis de temporización estatico (STA)" href="ta.html" />
+    <link rel="prev" title="Integración de macros" href="macros.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            OpenLane
+              <img src="_static/LogoUCRtransparentePNG.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contenido:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Síntesis lógica</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuracion-por-defecto">Configuración por defecto:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#descripcion-y-ejemplos">Descripción y ejemplos:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synth-clock-uncertainty"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_UNCERTAINTY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-clock-transition"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_TRANSITION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-timing-derate"><code class="docutils literal notranslate"><span class="pre">SYNTH_TIMING_DERATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-strategy"><code class="docutils literal notranslate"><span class="pre">SYNTH_STRATEGY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-buffering"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFERING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-sizing"><code class="docutils literal notranslate"><span class="pre">SYNTH_SIZING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-read-blackbox-lib"><code class="docutils literal notranslate"><span class="pre">SYNTH_READ_BLACKBOX_LIB</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-no-flat"><code class="docutils literal notranslate"><span class="pre">SYNTH_NO_FLAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-share-resources"><code class="docutils literal notranslate"><span class="pre">SYNTH_SHARE_RESOURCES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-adder-type"><code class="docutils literal notranslate"><span class="pre">SYNTH_ADDER_TYPE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-elaborate-only"><code class="docutils literal notranslate"><span class="pre">SYNTH_ELABORATE_ONLY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-flat-top"><code class="docutils literal notranslate"><span class="pre">SYNTH_FLAT_TOP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#io-pct"><code class="docutils literal notranslate"><span class="pre">IO_PCT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-buffer-direct-wires"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFER_DIRECT_WIRES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synth-splitnets"><code class="docutils literal notranslate"><span class="pre">SYNTH_SPLITNETS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#resumen-de-resultados">Resumen de resultados:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Diseño físico</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ta.html">Análisis de temporización estatico (STA)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="macros.html">Integración de macros</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OpenLane</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Síntesis lógica</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/synthesis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sintesis-logica">
+<h1><a class="toc-backref" href="#id3" role="doc-backlink">Síntesis lógica</a><a class="headerlink" href="#sintesis-logica" title="Link to this heading"></a></h1>
+<nav class="contents" id="contenidos">
+<p class="topic-title">Contenidos</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#sintesis-logica" id="id3">Síntesis lógica</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuracion-por-defecto" id="id4">Configuración por defecto:</a></p></li>
+<li><p><a class="reference internal" href="#descripcion-y-ejemplos" id="id5">Descripción y ejemplos:</a></p>
+<ul>
+<li><p><a class="reference internal" href="#synth-clock-uncertainty" id="id6"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_UNCERTAINTY</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-clock-transition" id="id7"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_TRANSITION</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-timing-derate" id="id8"><code class="docutils literal notranslate"><span class="pre">SYNTH_TIMING_DERATE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-strategy" id="id9"><code class="docutils literal notranslate"><span class="pre">SYNTH_STRATEGY</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-buffering" id="id10"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFERING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-sizing" id="id11"><code class="docutils literal notranslate"><span class="pre">SYNTH_SIZING</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-read-blackbox-lib" id="id12"><code class="docutils literal notranslate"><span class="pre">SYNTH_READ_BLACKBOX_LIB</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-no-flat" id="id13"><code class="docutils literal notranslate"><span class="pre">SYNTH_NO_FLAT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-share-resources" id="id14"><code class="docutils literal notranslate"><span class="pre">SYNTH_SHARE_RESOURCES</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-adder-type" id="id15"><code class="docutils literal notranslate"><span class="pre">SYNTH_ADDER_TYPE</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-elaborate-only" id="id16"><code class="docutils literal notranslate"><span class="pre">SYNTH_ELABORATE_ONLY</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-flat-top" id="id17"><code class="docutils literal notranslate"><span class="pre">SYNTH_FLAT_TOP</span></code></a></p></li>
+<li><p><a class="reference internal" href="#io-pct" id="id18"><code class="docutils literal notranslate"><span class="pre">IO_PCT</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-buffer-direct-wires" id="id19"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFER_DIRECT_WIRES</span></code></a></p></li>
+<li><p><a class="reference internal" href="#synth-splitnets" id="id20"><code class="docutils literal notranslate"><span class="pre">SYNTH_SPLITNETS</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#resumen-de-resultados" id="id21">Resumen de resultados:</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="configuracion-por-defecto">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Configuración por defecto:</a><a class="headerlink" href="#configuracion-por-defecto" title="Link to this heading"></a></h2>
+<p>Revisando la ruta <code class="docutils literal notranslate"><span class="pre">~/OpenLane/configuration/synthesis.tcl</span></code> se encuentra la siguiente información en este archivo:</p>
+<figure class="align-center" id="synth-def">
+<a class="reference internal image-reference" href="_images/synth_var.png"><img alt="_images/synth_var.png" src="_images/synth_var.png" style="width: 444.8px; height: 317.6px;" /></a>
+<figcaption>
+<p><span class="caption-text">Configuración por defecto de las variables de síntesis.</span><a class="headerlink" href="#synth-def" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="descripcion-y-ejemplos">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Descripción y ejemplos:</a><a class="headerlink" href="#descripcion-y-ejemplos" title="Link to this heading"></a></h2>
+<section id="synth-clock-uncertainty">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_UNCERTAINTY</span></code></a><a class="headerlink" href="#synth-clock-uncertainty" title="Link to this heading"></a></h3>
+<p>Especifica un valor para la incertidumbre del reloj para el análisis de temporización. (Predeterminado: <cite>0.25</cite>)</p>
+<p>Al aumentarlo al doble de su valor por defecto (<cite>0.5</cite>) vemos que primeramente el cambio se aprecia en los reportes
+de sta de la siguiente manera:</p>
+<figure class="align-center" id="sta-min-clock-uncertainty">
+<a class="reference internal image-reference" href="_images/sta_min_CLOCK_UNCERTAINTY.png"><img alt="_images/sta_min_CLOCK_UNCERTAINTY.png" src="_images/sta_min_CLOCK_UNCERTAINTY.png" style="width: 595.2px; height: 434.40000000000003px;" /></a>
+<figcaption>
+<p><span class="caption-text">Reporte sta min de la tapa de síntesis.</span><a class="headerlink" href="#sta-min-clock-uncertainty" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde comparando ambos reportes (mínimo y máximo) vemos que para el caso mínimo este delay se suma; mientras que para
+el caso máximo este delay se resta. Produciendo así aumento en el tiempo de hold y disminución el tiempo de setup respectivamente.</p>
+<p>Se observa que el tiempo de hold puede aumentar tanto al punto de no cumplir para ciertos caminos. Lo cual se observa en la siguiente imagen:</p>
+<figure class="align-center" id="sta-clock-uncertainty">
+<a class="reference internal image-reference" href="_images/sta_CLOCK_UNCERTAINTY.png"><img alt="_images/sta_CLOCK_UNCERTAINTY.png" src="_images/sta_CLOCK_UNCERTAINTY.png" style="width: 576.0px; height: 295.2px;" /></a>
+<figcaption>
+<p><span class="caption-text">Reporte sumatoria sta de la tapa de síntesis.</span><a class="headerlink" href="#sta-clock-uncertainty" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="synth-clock-transition">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_TRANSITION</span></code></a><a class="headerlink" href="#synth-clock-transition" title="Link to this heading"></a></h3>
+<p>Especifica un valor para el tiempo de transición/desplazamiento del reloj para el análisis de temporización. (Predeterminado: <cite>0.15</cite>)</p>
+<p>Al aumentarlo al doble de su valor por defecto (<cite>0.3</cite>) vemos que primeramente el cambio se aprecia en los reportes
+de sta de la siguiente manera:</p>
+<figure class="align-center" id="sta-min-clock-transition">
+<a class="reference internal image-reference" href="_images/sta_min_CLOCK_TRANSITION.png"><img alt="_images/sta_min_CLOCK_TRANSITION.png" src="_images/sta_min_CLOCK_TRANSITION.png" style="width: 595.2px; height: 434.40000000000003px;" /></a>
+<figcaption>
+<p><span class="caption-text">Reporte sta minimo de la tapa de síntesis</span><a class="headerlink" href="#sta-min-clock-transition" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Además se obtiene un nuevo mensaje en el registro de advertencias:</p>
+<figure class="align-center" id="sta-clock-transition">
+<a class="reference internal image-reference" href="_images/warning_CLOCK_TRANSITION.png"><img alt="_images/warning_CLOCK_TRANSITION.png" src="_images/warning_CLOCK_TRANSITION.png" style="width: 713.6px; height: 63.2px;" /></a>
+<figcaption>
+<p><span class="caption-text">Registro de advertencias.</span><a class="headerlink" href="#sta-clock-transition" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Del cual revisando el reporte mencionado vemos que se producen tres violaciones de slew, que significa que la transición de la señal es muy lenta.</p>
+</section>
+<section id="synth-timing-derate">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_TIMING_DERATE</span></code></a><a class="headerlink" href="#synth-timing-derate" title="Link to this heading"></a></h3>
+<p>Especifica un factor de reducción para multiplicar los retrasos de ruta. Especifica los rangos superior e inferior de sincronización. (Predeterminado: <cite>+5%/-5%</cite>)</p>
+<p>Al aumentar este valor al doble de su valor por defecto (0.1) vemos que se aumenta el tiempo de llegada de los datos en 0.1 con respecto al valor por defecto;
+esto tras comparar para una misma ruta su análisis de sta como se observa en la siguiente imagen:</p>
+<figure class="align-center" id="sta-max-synth-timing-derate">
+<a class="reference internal image-reference" href="_images/sta_max_SYNTH_TIMING_DERATE.png"><img alt="_images/sta_max_SYNTH_TIMING_DERATE.png" src="_images/sta_max_SYNTH_TIMING_DERATE.png" style="width: 698.4000000000001px; height: 316.8px;" /></a>
+<figcaption>
+<p><span class="caption-text">Reportes sta máximo de la tapa de síntesis.</span><a class="headerlink" href="#sta-max-synth-timing-derate" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="synth-strategy">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_STRATEGY</span></code></a><a class="headerlink" href="#synth-strategy" title="Link to this heading"></a></h3>
+<p>Estrategias para la síntesis lógica abc y el mapeo tecnológico. Valores posibles son <code class="docutils literal notranslate"><span class="pre">DELAY/AREA</span></code> con rangos de <cite>0-4</cite> y <cite>0-3</cite> respectivamente; la primera parte se refiere al objetivo de optimización
+de la estrategia de síntesis (area vs delay) y la segunda es un índice. (Predeterminado: <code class="docutils literal notranslate"><span class="pre">AREA</span> <span class="pre">0</span></code>).</p>
+<p>Al variar la estrategia se pueden obtener optimizaciones para ciertos objetivos específicos según la aplicación. Esto se puede observar en la siguiente imagen:</p>
+<figure class="align-center" id="design-exploration">
+<a class="reference internal image-reference" href="_images/design_exploration.png"><img alt="_images/design_exploration.png" src="_images/design_exploration.png" style="width: 558.4px; height: 226.4px;" /></a>
+<figcaption>
+<p><span class="caption-text">Resultados exploración espacio de diseño.</span><a class="headerlink" href="#design-exploration" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="synth-buffering">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFERING</span></code></a><a class="headerlink" href="#synth-buffering" title="Link to this heading"></a></h3>
+<p>Habilita el buffer de celdas abc. Habilitado = 1, Deshabilitado = 0. (Predeterminado: <cite>1</cite>)
+Lo cual tras deshabilitarlo se observa lo siguiente al comparar con el reporte por defecto:</p>
+<figure class="align-center" id="area-synth-buffering">
+<a class="reference internal image-reference" href="_images/area_SYNTH_BUFFERING.png"><img alt="_images/area_SYNTH_BUFFERING.png" src="_images/area_SYNTH_BUFFERING.png" style="width: 732.8000000000001px; height: 615.2px;" /></a>
+<figcaption>
+<p><span class="caption-text">Reportes de área de la etapa de sintesis.</span><a class="headerlink" href="#area-synth-buffering" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>De donde se observa que la principal diferencia entre las cantidad de celdas es provocada por disminución en la cantidad de buffers utilizados.</p>
+</section>
+<section id="synth-sizing">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_SIZING</span></code></a><a class="headerlink" href="#synth-sizing" title="Link to this heading"></a></h3>
+<p>Habilita el tamaño de celda abc (en lugar de almacenar en buffer).  Habilitado = 1, Deshabilitado = 0. (Predeterminado: <cite>0</cite>)
+Se tienen los mismo resultados de habilitar el parámetro <code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFERING</span></code>.</p>
+</section>
+<section id="synth-read-blackbox-lib">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_READ_BLACKBOX_LIB</span></code></a><a class="headerlink" href="#synth-read-blackbox-lib" title="Link to this heading"></a></h3>
+<p>Bandera que permite leer el archivo biblioteca completo (sin recortar) como una caja negra para síntesis. No se utiliza en el mapeo tecnológico.
+Usarse para preservar instancias de compuerta en el rtl del diseño. Habilitado = 1, Deshabilitado = 0. (Predeterminado: <cite>0</cite>)</p>
+<p>Lo cual tras habilitarlo se observa que el área disminuye porque se leen menos celdas ya que se utiliza el concepto de caja negra. Lo anterior se observa en los siguientes reportes:</p>
+<figure class="align-center" id="area-synth-read-blackbox-lib">
+<img alt="_images/area_SYNTH_READ_BLACKBOX_LIB.png" src="_images/area_SYNTH_READ_BLACKBOX_LIB.png" />
+<figcaption>
+<p><span class="caption-text">Reportes de área de la etapa de síntesis.</span><a class="headerlink" href="#area-synth-read-blackbox-lib" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="synth-no-flat">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_NO_FLAT</span></code></a><a class="headerlink" href="#synth-no-flat" title="Link to this heading"></a></h3>
+<p>Bandera que deshabilita el aplanamiento de la jerarquía durante la síntesis, y solo la aplana después de la síntesis, el mapeo y las optimizaciones. Habilitado = 1, Deshabilitado = 0. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="synth-share-resources">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_SHARE_RESOURCES</span></code></a><a class="headerlink" href="#synth-share-resources" title="Link to this heading"></a></h3>
+<p>Bandera que permite a yosys reducir el número de celdas determinando recursos que se pueden compartir y fusionándolos. Habilitado = 1, Deshabilitado = 0. (Predeterminado: <cite>1</cite>).</p>
+</section>
+<section id="synth-adder-type">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_ADDER_TYPE</span></code></a><a class="headerlink" href="#synth-adder-type" title="Link to this heading"></a></h3>
+<p>Tipo de sumador al que se asignan los operadores $add y $sub. Posibles valores <cite>YOSYS/FA/RCA/CSA</cite>; donde <cite>YOSYS</cite> usa el sumador interno de Yosys,
+<cite>FA</cite> usa full-adder structure, <cite>RCA</cite> usa ripple carry adder structure y <cite>CSA</cite> usa carry select adder. (Predeterminado: <cite>YOSYS</cite>)</p>
+<p>Para sus distintos valores posibles se tiene el siguiente cuadro resumen de los parámetros mas importantes:</p>
+<table class="docutils align-center" id="id1">
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">Resumen parámetros de interés para las distintos tipos de sumadores</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Tipos de sumadores</p></th>
+<th class="head"><p>YOSYS</p></th>
+<th class="head"><p>FA</p></th>
+<th class="head"><p>RCA</p></th>
+<th class="head"><p>CSA</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chip Area</p></td>
+<td><p>100462.6016</p></td>
+<td><p>105050.752</p></td>
+<td><p>100890.512</p></td>
+<td><p>107314.1728</p></td>
+</tr>
+<tr class="row-odd"><td><p>Potencia</p></td>
+<td><p>1.99e-02</p></td>
+<td><p>2.20e-02</p></td>
+<td><p>2.00e-02</p></td>
+<td><p>2.05e-02</p></td>
+</tr>
+<tr class="row-even"><td><p>Peor Setup</p></td>
+<td><p>3.15</p></td>
+<td><p>0.15</p></td>
+<td><p>-16.59</p></td>
+<td><p>0.46</p></td>
+</tr>
+<tr class="row-odd"><td><p>Peor Hold</p></td>
+<td><p>0.16</p></td>
+<td><p>0.17</p></td>
+<td><p>0.19</p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-even"><td><p>Violaciones Slew</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>28</p></td>
+</tr>
+<tr class="row-odd"><td><p>Violaciones Fanout</p></td>
+<td><p>4</p></td>
+<td><p>7</p></td>
+<td><p>13</p></td>
+<td><p>31</p></td>
+</tr>
+<tr class="row-even"><td><p>Violaciones Cap</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Por otro lado la potencia y el skew se mantiene bastante similar.</p>
+</section>
+<section id="synth-elaborate-only">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_ELABORATE_ONLY</span></code></a><a class="headerlink" href="#synth-elaborate-only" title="Link to this heading"></a></h3>
+<p>No se realiza ningún mapeo lógico. Útil cuando se trata de netlists estructurales de Verilog. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="synth-flat-top">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_FLAT_TOP</span></code></a><a class="headerlink" href="#synth-flat-top" title="Link to this heading"></a></h3>
+<p>Se especifica si el nivel superior debe aplanarse o no durante la elaboración. 1 = Verdadero, 0 = Falso. (Predeterminado: <cite>0</cite>)</p>
+</section>
+<section id="io-pct">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">IO_PCT</span></code></a><a class="headerlink" href="#io-pct" title="Link to this heading"></a></h3>
+<p>Especifica el porcentaje del período de reloj utilizado en los retrasos de entrada/salida. Varía de 0 a 1,0. (Predeterminado: <cite>0.2</cite>)</p>
+<p>Al aumentarlo al doble de su valor por defecto (<cite>0.4</cite>) vemos que este cambio primeramente se puede apreciar en los reportes de sta de la
+siguiente manera:</p>
+<figure class="align-center" id="sta-max-io-pct">
+<img alt="_images/sta_max_IO_PCT.png" src="_images/sta_max_IO_PCT.png" />
+<figcaption>
+<p><span class="caption-text">Reporte sta máximo de la tapa de síntesis.</span><a class="headerlink" href="#sta-max-io-pct" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Esto principalmente afecta el tiempo de llegada del dato que para caminos críticos si se aumenta mucho puede provocar violaciones de setup, como es el caso por ejemplo de utilizar un valor de 0.6.</p>
+</section>
+<section id="synth-buffer-direct-wires">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFER_DIRECT_WIRES</span></code></a><a class="headerlink" href="#synth-buffer-direct-wires" title="Link to this heading"></a></h3>
+<p>Inserta celdas intermedias en el diseño para cables conectados directamente. (Predeterminado: <cite>1</cite>)</p>
+<p>Al deshabilitarlo se modifica el reporte de área, ya que la cantidad de celdas disminuye en 8, de 9442 a 9434, reduciendo ligeramente el área como se observa
+en la siguiente imagen:</p>
+<figure class="align-center" id="area-synth-buffer-direct-wires">
+<img alt="_images/area_SYNTH_BUFFER_DIRECT_WIRES.png" src="_images/area_SYNTH_BUFFER_DIRECT_WIRES.png" />
+<figcaption>
+<p><span class="caption-text">Reportes área de la tapa de síntesis.</span><a class="headerlink" href="#area-synth-buffer-direct-wires" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="synth-splitnets">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">SYNTH_SPLITNETS</span></code></a><a class="headerlink" href="#synth-splitnets" title="Link to this heading"></a></h3>
+<p>Divide redes de varios bits en redes de un solo bit. (Predeterminado: <cite>1</cite>)</p>
+<p>Al deshabilitarlo se aumenta considerablemente el área, debido a que se utilizan mas wires y bits por wire, esto se observa en el siguiente reporte:</p>
+<figure class="align-center" id="area-synth-splitnets">
+<img alt="_images/area_SYNTH_SPLITNETS.png" src="_images/area_SYNTH_SPLITNETS.png" />
+<figcaption>
+<p><span class="caption-text">Reportes área de la tapa de síntesis.</span><a class="headerlink" href="#area-synth-splitnets" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="resumen-de-resultados">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">Resumen de resultados:</a><a class="headerlink" href="#resumen-de-resultados" title="Link to this heading"></a></h2>
+<p>Se va a compara, en porcentajes, cuanto vario con respecto al modelo de referencia los parámetros mas importantes para esta etapa al modificar cada variable.
+Los valores de las variables son los mismo utilizados anteriormente, de modo que se tienen los siguientes resultados:</p>
+<table class="docutils align-center" id="id2">
+<caption><span class="caption-text">Comparación de parámetros con el modelo de referencia, etapa de síntesis</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variables</p></th>
+<th class="head"><p>Chip Area</p></th>
+<th class="head"><p>Potencia</p></th>
+<th class="head"><p>Peor Setup</p></th>
+<th class="head"><p>Peor Hold</p></th>
+<th class="head"><p>Violaciones Slew</p></th>
+<th class="head"><p>Violaciones Fanout</p></th>
+<th class="head"><p>Violaciones Cap</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_UNCERTAINTY</span></code></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-7.94</p></td>
+<td><p>-156.25</p></td>
+<td><p>0</p></td>
+<td><p>12</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_CLOCK_TRANSITION</span></code></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-0.317</p></td>
+<td><p>6.25</p></td>
+<td><p>4</p></td>
+<td><p>11</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_TIME_DERATE</span></code></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-9.84</p></td>
+<td><p>-12.50</p></td>
+<td><p>0</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_STRATEGY</span></code></p></td>
+<td><p>3.963</p></td>
+<td><p>44.72</p></td>
+<td><p>47.30</p></td>
+<td><p>18.75</p></td>
+<td><p>2</p></td>
+<td><p>49</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFERING</span></code></p></td>
+<td><p>-7.65</p></td>
+<td><p>-3.01</p></td>
+<td><p>-76.50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-13</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_SIZING</span></code></p></td>
+<td><p>-7.65</p></td>
+<td><p>-3.01</p></td>
+<td><p>-76.50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-13</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_READ_BLACKBOX_LIB</span></code></p></td>
+<td><p>-0.340</p></td>
+<td><p>-3.01</p></td>
+<td><p>10.47</p></td>
+<td><p>12.5</p></td>
+<td><p>0</p></td>
+<td><p>-6</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_ADDER_TYPE</span></code></p></td>
+<td><p>6.82</p></td>
+<td><p>3.015</p></td>
+<td><p>-85.39</p></td>
+<td><p>25</p></td>
+<td><p>0</p></td>
+<td><p>-21</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IO_PCT</span></code></p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>-66.35</p></td>
+<td><p>0</p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_BUFFER_DIRECT_WIRES</span></code></p></td>
+<td><p>-0.039</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>8</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SYNTH_SPLITNETS</span></code></p></td>
+<td><p>17.76</p></td>
+<td><p>8.04</p></td>
+<td><p>-5.71</p></td>
+<td><p>112.5</p></td>
+<td><p>0</p></td>
+<td><p>-29</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="macros.html" class="btn btn-neutral float-left" title="Integración de macros" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ta.html" class="btn btn-neutral float-right" title="Análisis de temporización estatico (STA)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Universidad de Costa Rica EIE.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

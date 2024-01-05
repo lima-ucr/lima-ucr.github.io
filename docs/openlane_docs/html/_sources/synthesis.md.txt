@@ -1,0 +1,25 @@
+# Síntesis lógica
+
+## Variables de importancia
+
+|Variable|Descripcion|
+|-|-|
+| `SYNTH_DEFINES` <a id="SYNTH_DEFINES"></a> | Especifica las definiciones de verilog. La variable debe proporcionarse como una lista json/tcl. <br> (Por defecto: NONE) |
+| `SYNTH_CLOCK_UNCERTAINTY` <a id="SYNTH_CLOCK_UNCERTAINTY"></a>  | Especifica un valor para la incertidumbre/jitter del reloj para el análisis de temporización. <br> (Por defecto: `0.25`) |
+| `SYNTH_CLOCK_TRANSITION` <a id="SYNTH_CLOCK_TRANSITION"></a>  |  Especifica un valor para la transición/desplazamiento del reloj para el análisis de temporización. <br> (Por defecto: `0.15`) |
+| `SYNTH_TIMING_DERATE` <a id="SYNTH_TIMING_DERATE"></a>  | Especifica un factor de reducción para multiplicar los retrasos de ruta. Especifica los rangos superior e inferior de sincronización. <br> (Por defecto: `+5%/-5%`) |
+| `SYNTH_STRATEGY` <a id="SYNTH_STRATEGY"></a> | Estrategias para la síntesis lógica abc y el mapeo tecnológico. <br> Valores posibles son `DELAY/AREA 0-4/0-3`; la primera parte se refiere al objetivo de optimización de la estrategia de síntesis(area vs delay) y la segunda es un índice. <br> (Por defecto: `AREA 0`)|
+| `SYNTH_BUFFERING` <a id="SYNTH_BUFFERING"></a> | Habilita el almacenamiento en búfer de celdas abc <br> Habilitado = 1, Deshabilitado = 0 <br> (Por defecto: `1`)|
+| `SYNTH_SIZING` <a id="SYNTH_SIZING"></a> | Habilita el tamaño de celda abc (en lugar de almacenar en búfer) <br> Habilitado = 1, Deshabilitado = 0 <br> (Por defecto: `0`)|
+| `SYNTH_READ_BLACKBOX_LIB` <a id="SYNTH_READ_BLACKBOX_LIB"></a> | bandera que permite leer el archivo liberty completo (sin recortar) como una caja negra para síntesis. No se utiliza. No se utiliza en el mapeo tecnológico. Usarse preservar instancias de compuerta en el rtl del diseño.  <br> Habilitado = 1, Deshabilitado = 0 <br> (Por defecto: `0`)|
+| `SYNTH_NO_FLAT` <a id="SYNTH_NO_FLAT"></a> |  bandera que deshabilita el aplanamiento de la jerarquía durante la síntesis, y solo la aplana después de la síntesis, el mapeo y las optimizaciones. <br> Habilitado = 1, Deshabilitado = 0 <br> (Por defecto: `0`)|
+| `SYNTH_SHARE_RESOURCES` <a id="SYNTH_SHARE_RESOURCES"></a> | Bandera que permite a yosys reducir el número de celdas determinando recursos que se pueden compartir y fusionándolos. <br> Habilitado = 1, Deshabilitado = 0 <br> (Por defecto: `1`)|
+| `SYNTH_ADDER_TYPE` <a id="SYNTH_ADDER_TYPE"></a> | Tipo de sumador al que se asignan los operadores $add y $sub. <br> Posibles valores `YOSYS/FA/RCA/CSA`; donde `YOSYS` usa el sumador interno de Yosys, `FA` usa full-adder structure, `RCA` usa ripple carry adder structure y `CSA` usa carry select adder. <br> (Por defecto: `YOSYS`)|
+| `SYNTH_EXTRA_MAPPING_FILE` <a id="SYNTH_EXTRA_MAPPING_FILE"></a> | Parchivo techmap adicional para yosys que se ejecuta justo después de yosys `synth` antes del techmap genérico. <br> (Por defecto: `""`)|
+| `SYNTH_PARAMETERS` <a id="SYNTH_PARAMETERS"></a> | Whitespace-delimited key value pairs to be `chparam`ed in Yosys. In the format `key1=value1 key2=value2` <br> (Por defecto: None) |
+| `SYNTH_ELABORATE_ONLY` <a id="SYNTH_ELABORATE_ONLY"></a> | No se realiza ningun mapeo lógico. Útil cuando se trata de netlists estructurales de Verilog. <br> (Por defecto: `0`) |
+| `SYNTH_FLAT_TOP` <a id="SYNTH_FLAT_TOP"></a> | SEspecifica si el nivel superior debe aplanarse o no durante la elaboración. 1 = Verdadero, 0 = Falso. <br> (Por defecto: `0`)|
+| `IO_PCT` <a id="IO_PCT"></a> | Especifica el porcentaje del período de reloj utilizado en los retrasos de entrada/salida. Varía de 0 a 1,0. <br> (Por defecto: `0.2`) |
+| `SYNTH_BUFFER_DIRECT_WIRES` <a id="SYNTH_BUFFER_DIRECT_WIRES"></a> | Inserta celdas intermedias en el diseño para cables conectados directamente. <br> (Por defecto: `1`) |
+| `SYNTH_SPLITNETS` <a id="SYNTH_SPLITNETS"></a> | Divide redes de varios bits en redes de un solo bit. <br> (Por defecto: `1`) |
+
