@@ -6,12 +6,12 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'OpenLane'
-copyright = '2023, Universidad de Costa Rica EIE'
-author = 'Mauricio Rodriguez Obando-Erick Carvajal'
+project = 'LIMA'
+copyright = '2024, Universidad de Costa Rica EIE'
+author = 'Mauricio Rodriguez Obando-Erick Carvajal-Bryan Mora'
 #repo = "https://github.com/lima-ucr/OpenLane_docs_es"
 #branch = "master"
-release = '0.0.1'
+release = '0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -37,7 +37,7 @@ exclude_patterns = [
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_title = "Documentacion OpenLane"
+html_title = "LIMA"
 html_theme = 'sphinx_rtd_theme'
 html_logo = '../img/LogoUCRtransparentePNG.png'
 html_css_files = [
