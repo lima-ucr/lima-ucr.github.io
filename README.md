@@ -96,7 +96,7 @@ Donde XXXX es el nombre del directorio donde se encuentran los archivos .rst, y 
 
 sphinx-build  -b html docs newPage
 
-Esto debido a que los archivos .rst siempre debería guardarse en el directorio docs, y los archivos creados generalmente, por orden, se guardan en newPage, pero esta última no necesariamente siempre tiene que ser ese directorio.
+Esto debido a que los archivos .rst siempre deberían guardarse en el directorio docs, y los archivos html creados, por orden, se guardan en newPage.
 
 
 
